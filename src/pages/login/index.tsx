@@ -37,31 +37,20 @@ const signIn= async()=>{
   return (
     <div>
       <div
-      className=" bg-gray-200 w-[600px] h-[300px] flex items-center justify-between p-[30px] rounded-4 "
-        // style={{
-        // //   border: "1px solid lightgrey",
-        // //   width: "600px",
-        // //   height: "300px",
-        //   display: "flex",
-        //   justifyContent: "space-between",
-        //   alignItems: "center",
-        //   padding: "30px",
-        // //   background: "lightgrey",
-        //   borderRadius:"5px"
-        // }}
+      className=" bg-gray-200 w-[600px] h-[300px] flex items-center justify-between p-[30px] rounded-[10px]"
       >
         <div>
             <h3>SignIn</h3>
           <form
             action=""
-            style={{ display: "flex", flexDirection: "column", gap: "30px" }}
+            className="flex flex-col gap-[30px]"
             onSubmit={submitData}
           >
             <div style={{display:"flex",flexDirection:"column"}}>
-            <label htmlFor="" className="bg-red;">Email</label>
+            <label htmlFor="" className="">Email</label>
             <input
               type="email"
-              style={{ padding: "10px", borderRadius: "5px" }}
+              className="p-[10px] rounded-[5px]"
               placeholder="Email"
               onChange={(e: any) => {
                 const { value } = e.target;
