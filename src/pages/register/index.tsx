@@ -1,78 +1,66 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMutation } from "react-query";
+import { Link, useNavigate } from "react-router-dom";
+import AuthServices from "../../services/auth.service";
 
 function Register() {
     const navigate= useNavigate()
   const [userData, setUserData] = useState({name:"", email: "", password: "" });
   const submitData=((e:any)=>{
     e.preventDefault()
-    register()
+    registerUser()
   })
 
-const register= async()=>{
-    try {
-        const response = await fetch('http://localhost:3000/signin', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(userData),
-        });
-  
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const responseData = await response.json();
-        navigate("/login")
-        console.log('Post successful:', responseData);
-      } catch (error:any) {
-        // Handle errors during the fetch
-        console.error('Error during POST request:', error.message);
-      }
 
-}
+const { mutate: registerUser } = useMutation<any, Error>(
+  async () => {
+    return await AuthServices.signUp(userData);
+  },
+  {
+    onSuccess: (res: any) => {
+      console.log("data", res)
+      navigate("/login");
+    },
+    onError: (err: any) => {
+     console.log("errr", err)
+    },
+  }
+);
 
 
 
   return (
     <div>
       <div
-        style={{
-          border: "1px solid lightgrey",
-          width: "600px",
-          height: "350px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "30px",
-          background: "lightgrey",
-          borderRadius:"5px"
-        }}
+      className=" bg-gray-200 w-[600px] h-[400px]  p-[30px] rounded-[10px]"
       >
+         <div >
+          <h2 className="text-center">Register</h2>
+          </div>
+        <div className="flex items-center justify-between">
         <div>
-            <h3>Register</h3>
           <form
             action=""
-            style={{ display: "flex", flexDirection: "column", gap: "30px" }}
+            className="flex flex-col gap-[20px] "
             onSubmit={submitData}
           >
-             <div style={{display:"flex",flexDirection:"column"}}>
-            <label htmlFor="">Name</label>
+             <div className="flex flex-col" >
+            <label htmlFor="" >Name</label>
             <input
               type="text"
-              style={{ padding: "10px", borderRadius: "5px" }}
-              placeholder="Email"
+              className="p-[10px] rounded-[5px]"
+              placeholder="Name"
               onChange={(e: any) => {
                 const { value } = e.target;
-                setUserData({ ...userData, name: value });
+                setUserData({ ...userData, email: value });
               }}
             />
             </div>
-            <div style={{display:"flex",flexDirection:"column"}}>
-            <label htmlFor="">Email</label>
+            <div className="flex flex-col" >
+            <label htmlFor="" >Email</label>
             <input
               type="email"
-              style={{ padding: "10px", borderRadius: "5px" }}
+              className="p-[10px] rounded-[5px]"
               placeholder="Email"
               onChange={(e: any) => {
                 const { value } = e.target;
@@ -80,29 +68,33 @@ const register= async()=>{
               }}
             />
             </div>
-            <div style={{display:"flex",flexDirection:"column"}}>
+            <div className="flex flex-col">
             <label htmlFor="">Password</label>
             <input
               type="password"
               placeholder="Password"
-              style={{ padding: "10px", borderRadius: "5px" }}
+              className="p-[10px] rounded-[5px]"
               onChange={(e: any) => {
                 const { value } = e.target;
                 setUserData({ ...userData, password: value });
               }}
             />
             </div>
-            <button
+            <input
               type="submit"
-              style={{ background: "green", width: "100px", outline: "none", color:"white" }}
-            >
-              Register
-            </button>
+              value="Register"
+              className="bg-green-500 w-[100px] h-[40px] rounded-md  text-white cursor-pointer hover:bg-green-600"
+            />
           </form>
         </div>
-        <div style={{ marginRight: "50px" }}>
-          <img style={{height:"200px"}} src="https://i.pinimg.com/1200x/97/d1/e3/97d1e37ae0f898e03c51d446bd522ffc.jpg" alt="" />
+        <div className="mr-12">
+          <a>Logo</a>
         </div>
+      </div>
+      <div className="text-center">
+      Have an account?
+      {" "}<Link to="/login"><a href="">Login</a></Link>
+      </div>
       </div>
     </div>
   );
