@@ -1,12 +1,13 @@
-import axios from "axios";
+// import axios from "axios";
+import apiInstance from "../axios";
 
 class AuthService {
   signUp = async (data: any) => {
-    return await axios.post("http://localhost:3000/register", data);
+    return await apiInstance.post("/register", data);
   };
 
   signIn = async (data: any) => {
-    return await axios.post("http://localhost:3000/signin", data);
+    return await apiInstance.post("/signin", data);
   };
 
  

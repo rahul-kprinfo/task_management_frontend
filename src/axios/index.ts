@@ -11,8 +11,8 @@ apiInstance.interceptors.response.use(
   (response) => responseInterceptor(response),
   (error) => {
     if (error.response.status === 401) {
-      localStorage.clear();
-      window.location.assign("/");
+      // localStorage.clear();
+      // window.location.assign("/");
     } else {
       console.error(error);
     }
