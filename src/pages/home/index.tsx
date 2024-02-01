@@ -4,16 +4,17 @@ import { Button } from "../../components/ui/button";
 import { DataTableDemo } from "../../components/tableComponent";
 import { ColumnDef } from "@tanstack/react-table";
 import { SheetDemo } from "../../components/customPopUp";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import moment from "moment";
 import ProjectServices from "../../services/project.service";
+import { toast } from "sonner";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any>([]);
   const [skip, setSkip] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [count, setCount]=useState(0)
+  const [count, setCount] = useState(0);
   const token = localStorage.getItem("ACCESS_TOKEN");
   const navigate = useNavigate();
 
@@ -28,13 +29,30 @@ export default function Home() {
       return await ProjectServices.getProject(payload);
     },
     {
-      onSuccess: (res) => {
+      onSuccess: (res: any) => {
         console.log("resss", res);
         setData(res?.data);
-        setCount(res?.totalcount)
+        setCount(res?.totalcount);
       },
       onError: (err: any) => {
         console.log(err.response?.data || err);
+      },
+    }
+  );
+
+  const { mutate: deleteProject } = useMutation<any, Error>(
+    async (id: any) => {
+      return await ProjectServices.deleteProject(id);
+    },
+    {
+      onSuccess: (res: any) => {
+        toast.success(res?.message);
+        getProjectData.refetch();
+        // navigate("/");
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message);
+        console.log("errr", err);
       },
     }
   );
@@ -87,6 +105,14 @@ export default function Home() {
               Edit
             </Button>
             <Button variant="ghost">View</Button>
+            <Button
+              onClick={() => {
+                deleteProject(row.original.id);
+              }}
+              variant="ghost"
+            >
+              Delete
+            </Button>
           </div>
         );
       },
@@ -98,6 +124,10 @@ export default function Home() {
       navigate("/");
     }
   }, [token]);
+
+  useEffect(() => {
+    getProjectData.refetch();
+  }, [skip, limit]);
   return (
     <>
       <div className="h-full w-full p-4">
@@ -121,7 +151,7 @@ export default function Home() {
             take={limit}
             setSkip={setSkip}
             setTake={setLimit}
-            totalcount={10}
+            totalcount={count}
           />
         </div>
       </div>

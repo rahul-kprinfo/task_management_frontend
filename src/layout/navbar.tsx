@@ -1,8 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-// import { Avatar, AvatarFallback } from "../ui/avatar";
 import { RouteItem } from "../types/routesTypes";
-import { Button } from "../components/ui/button";
-import { AvatarIcon, ExitIcon } from "@radix-ui/react-icons";
 
 interface INavbarProps {
   routes: RouteItem[];
@@ -10,7 +7,6 @@ interface INavbarProps {
 export default function CustomNavbar(props: INavbarProps) {
   const { routes } = props;
   const currentPath = window.location.pathname;
-  console.log("currentPath",currentPath)
   const navLinks = routes.map((item, index) => {
     const isCurrentPath = currentPath.includes(item.path);
     const currentPathStyle =
@@ -24,7 +20,7 @@ export default function CustomNavbar(props: INavbarProps) {
         }`} 
         to={item.path}
       >
-        {item.icon}
+        {/* {item.icon} */}
          {item.displayName}
       </Link>
     ) : null;

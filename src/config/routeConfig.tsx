@@ -3,8 +3,7 @@ import Home from "../pages/home";
 import Register from "../pages/register";
 import Login from "../pages/login";
 // import { RouteItem } from "@/types/route.type";
-import { Navigate } from "react-router-dom";
-const token= true;
+
 export const routeConfig: any = [
   {
     path: "/",
@@ -29,4 +28,14 @@ export const routeConfig: any = [
       </LayoutWrapper>
     ),
   },
+  // {
+  //   path: "/dashBoard",
+  //   displayName: "Dashboard",
+  //   showInNavigate: true,
+  //   element: (
+  //     <LayoutWrapper>
+  //       <Home />
+  //     </LayoutWrapper>
+  //   ),
+  // },
 ];
