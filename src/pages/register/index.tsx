@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useMutation } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import AuthServices from "../../services/auth.service";
@@ -8,12 +7,7 @@ import { toast } from "sonner";
 
 function Register() {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
- 
+
   const formik: any = useFormik({
     initialValues: {
       name: "",
@@ -53,7 +47,7 @@ function Register() {
     <div className="flex flex-1 justify-center items-center">
       <div className="w-[400px] min-h-[450px] bg-white rounded-xl">
         <div className="text-center">
-          <h2 className="pt-6 font-bold">Register</h2>
+          <h2 className="pt-6 font-bold text-xl">Register</h2>
         </div>
         <form
           action=""

@@ -57,7 +57,7 @@ function Login() {
       <div className="flex flex-1 justify-center items-center">
         <div className="w-[400px] min-h-96 bg-white rounded-xl">
           <div className="text-center">
-            <h2 className="pt-6 font-bold">Login</h2>
+            <h2 className="pt-6 font-bold text-xl">Login</h2>
           </div>
           <form
             action=""
