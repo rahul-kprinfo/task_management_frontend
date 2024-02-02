@@ -1,4 +1,3 @@
-import { Button } from "../components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -37,21 +36,21 @@ export default function LogoutCard() {
     <div>
       <HoverCard>
         <HoverCardTrigger>
-          {/* <MdOutlineInfo size={20} className="cursor-pointer" /> */}
           <CgProfile size={25} className="cursor-pointer" />
         </HoverCardTrigger>
         <HoverCardContent>
           <div className="">
-            {/* <CgProfile /> */}
-            <span className="font-semibold">Name: </span>
-            <span>{name}</span>
-
-            <br />
-
-            <span className="font-semibold">Email: </span>
-            <span>{email}</span>
+            <div className="flex items-center gap-2">
+              {/* <CgProfile size={20} /> */}
+              <div>
+                <span className="font-semibold">Name: </span>
+                <span>{name}</span>
+                <br />
+                <span className="font-semibold">Email: </span>
+                <span>{email}</span>
+              </div>
+            </div>
             <Separator />
-            {/* <Separator /> */}
             <div
               onClick={() => {
                 setAlertOpen(true);
@@ -60,14 +59,6 @@ export default function LogoutCard() {
             >
               <TbLogout2 />
               <div className="font-medium">Logout</div>
-              {/* <Button
-                variant="secondary"
-                onClick={() => {
-                  handleLogout();
-                }}
-              >
-                Logout
-              </Button> */}
             </div>
           </div>
         </HoverCardContent>
