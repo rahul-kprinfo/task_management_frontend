@@ -16,16 +16,19 @@ export default function LayoutWrapper({ children }: ILayoutProps) {
     }
   }, []);
   return (
-    <div className="flex flex-row ">
-      <nav className="basis-72 border h-sceen">
-        <CustomNavbar
-           routes={routeConfig.filter((route:any) => route.showInNavigate)}
-        />  
-      </nav>
-     <div className="basis-full">
-      <Navbar1/>
-      <div className="flex w-full h-full overflow-y-auto">{children}</div>
-      </div>  
+    <div>
+      <Navbar1 />
+      <div className="flex">
+        <nav className="basis-72 shadow-md h-screen mt-0 p-0">
+          <CustomNavbar
+            routes={routeConfig.filter((route: any) => route.showInNavigate)}
+          />
+        </nav>
+        <div className="flex w-full h-full overflow-y-auto">{children}</div>
+        {/* <div className="basis-full">
+        <Navbar1 />
+        </div> */}
       </div>
+    </div>
   );
 }

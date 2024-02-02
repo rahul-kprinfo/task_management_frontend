@@ -14,19 +14,36 @@ import {
 import ProjectServices from "../../services/project.service";
 import { useMutation } from "react-query";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
-export function SheetDemo({ open, onClose, refetch }: any) {
+export function SheetDemo({
+  open,
+  onClose,
+  refetch,
+  updateData,
+  isEdit,
+  setIsEdit,
+}: any) {
   const formik: any = useFormik({
     initialValues: {
-      projectName: "",
+      projectName: updateData?.projectName || "",
     },
     validationSchema: Yup.object({
       projectName: Yup.string().required("Project Name is required"),
     }),
     onSubmit: (values: any) => {
-      createProject(values);
+      if (isEdit) {
+        updateProject(values);
+      } else {
+        createProject(values);
+      }
     },
   });
+  useEffect(() => {
+    formik.setValues({
+      projectName: updateData?.projectName || "",
+    });
+  }, [updateData]);
 
   const { mutate: createProject } = useMutation<any, Error>(
     async (payload: any) => {
@@ -36,21 +53,52 @@ export function SheetDemo({ open, onClose, refetch }: any) {
       onSuccess: (res: any) => {
         toast.success(res?.message);
         //   navigate("/");
+        formik.resetForm();
         onClose();
         refetch();
       },
       onError: (err: any) => {
         toast.error(err?.response?.data?.message);
-        console.log("errr", err);
+      },
+    }
+  );
+  const { mutate: updateProject } = useMutation<any, Error>(
+    async (payload: any) => {
+      return await ProjectServices.upateProject(updateData?.id, payload);
+    },
+    {
+      onSuccess: (res: any) => {
+        toast.success(res?.message);
+        //   navigate("/");
+        formik.resetForm();
+        onClose();
+        refetch();
+        setIsEdit(false);
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message);
       },
     }
   );
 
+  useEffect(() => {
+    if (open === false) {
+      formik.resetForm();
+    }
+  }, [open]);
+
+  const title = isEdit ? "Update Project" : "Create Project";
   return (
-    <Sheet open={open}>
+    <Sheet
+      open={open}
+      onOpenChange={() => {
+        onClose();
+        setIsEdit(false);
+      }}
+    >
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Create Project</SheetTitle>
+          <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
         <form action="">
           <div className="grid gap-4 py-4">
@@ -62,7 +110,7 @@ export function SheetDemo({ open, onClose, refetch }: any) {
                 onChange={formik.handleChange}
                 id="projectName"
                 value={formik?.values?.projectName}
-                onBlur={formik.handleBlur}
+                // onBlur={formik.handleBlur}
                 className="col-span-3"
                 placeholder="Enter Project Name"
               />

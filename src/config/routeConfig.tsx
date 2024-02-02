@@ -28,14 +28,4 @@ export const routeConfig: any = [
       </LayoutWrapper>
     ),
   },
-  // {
-  //   path: "/dashBoard",
-  //   displayName: "Dashboard",
-  //   showInNavigate: true,
-  //   element: (
-  //     <LayoutWrapper>
-  //       <Home />
-  //     </LayoutWrapper>
-  //   ),
-  // },
 ];

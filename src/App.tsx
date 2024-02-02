@@ -1,27 +1,24 @@
 import "./App.css";
-import { BrowserRouter,RouterProvider,createBrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import { routeConfig } from "./config/routeConfig";
 
 function App() {
-  const router = createBrowserRouter(routeConfig);
-
-  // const token = localStorage.getItem("ACCESS_TOKEN");
+  const token = localStorage.getItem("ACCESS_TOKEN");
   return (
     <div>
       <Toaster richColors position="top-right" closeButton />
-      <RouterProvider router={router} />;
-      {/* <BrowserRouter>
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/home" element={<LayoutWrapper><Home /></LayoutWrapper>} />
-          <Route path="/register" element={<Register />} />
+          {routeConfig.map(({ path, element }: any) => (
+            <Route key={path} path={path} element={element} />
+          ))}
           <Route
             path="*"
             element={token ? <Navigate to="/home" /> : <Navigate to="/" />}
           />
         </Routes>
-      </BrowserRouter> */}
+      </BrowserRouter>
     </div>
   );
 }

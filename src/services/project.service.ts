@@ -9,8 +9,8 @@ class ProjectService {
     return await apiInstance.post("/get-project", payload);
   };
 
-  upateProject = async (data: any) => {
-    return await apiInstance.post("/signin", data);
+  upateProject = async (id: any, payload:any) => {
+    return await apiInstance.patch(`/update-project/${id}`, payload);
   };
 
   deleteProject = async (id: any) => {

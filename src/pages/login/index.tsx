@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import AuthServices from "../../services/auth.service";
@@ -9,7 +9,6 @@ import { toast } from "sonner";
 
 function Login() {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({ email: "", password: "" });
   const token = localStorage.getItem("ACCESS_TOKEN");
 
   const formik: any = useFormik({
@@ -37,6 +36,7 @@ function Login() {
         toast.success(res?.message);
         localStorage.setItem("ACCESS_TOKEN", res?.token);
         localStorage.setItem("USER_NAME", res?.username);
+        localStorage.setItem("EMAIL", res?.email);
         navigate("/home");
       },
       onError: (err: any) => {
