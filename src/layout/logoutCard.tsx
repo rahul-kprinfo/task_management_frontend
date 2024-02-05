@@ -9,9 +9,12 @@ import { CgProfile } from "react-icons/cg";
 import { TbLogout2 } from "react-icons/tb";
 import { AlertDialogDemo } from "../components/alertBox";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function LogoutCard() {
   const [alertOpen, setAlertOpen] = useState(false);
+  const user = useSelector((state: any) => state.auth.user);
+  console.log("user", user);
 
   const navigate = useNavigate();
   const handleLogout = () => {

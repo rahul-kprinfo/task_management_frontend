@@ -79,6 +79,23 @@ export default function Home() {
     {
       accessorKey: "projectName",
       header: () => <div className=" font-bold">Project Name</div>,
+      cell: ({ row }) => {
+        return (
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              navigate("/taskManagement", {
+                state: {
+                  projectId: row.original.id,
+                  projectName: row.original.projectName,
+                },
+              });
+            }}
+          >
+            {row.getValue("projectName")}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "createdAt",

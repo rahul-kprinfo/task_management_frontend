@@ -2,6 +2,7 @@ import LayoutWrapper from "../layout/wrapper";
 import Home from "../pages/home";
 import Register from "../pages/register";
 import Login from "../pages/login";
+import TaskManagement from "../pages/taskManagement";
 // import { RouteItem } from "@/types/route.type";
 
 export const routeConfig: any = [
@@ -25,6 +26,16 @@ export const routeConfig: any = [
     element: (
       <LayoutWrapper>
         <Home />
+      </LayoutWrapper>
+    ),
+  },
+  {
+    path: "/taskmanagement",
+    displayName: "Task",
+    showInNavigate: false,
+    element: (
+      <LayoutWrapper>
+        <TaskManagement />
       </LayoutWrapper>
     ),
   },

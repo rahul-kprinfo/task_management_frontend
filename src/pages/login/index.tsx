@@ -7,9 +7,13 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
 
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../redux/slice/authSlice";
+
 function Login() {
   const navigate = useNavigate();
   const token = localStorage.getItem("ACCESS_TOKEN");
+  const dispatch = useDispatch();
 
   const formik: any = useFormik({
     initialValues: {
@@ -37,6 +41,10 @@ function Login() {
         localStorage.setItem("ACCESS_TOKEN", res?.token);
         localStorage.setItem("USER_NAME", res?.username);
         localStorage.setItem("EMAIL", res?.email);
+        dispatch(
+          loginUser({ user: { username: res?.username, email: res?.email } })
+        );
+
         navigate("/home");
       },
       onError: (err: any) => {

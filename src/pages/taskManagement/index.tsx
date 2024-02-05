@@ -1,0 +1,48 @@
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
+import TaskCreation from "../task";
+import UserCreation from "../user";
+import { useLocation } from "react-router-dom";
+
+export default function TaskManagement() {
+  const state = useLocation();
+  const projectName = state?.state?.projectName;
+
+  console.log("state", state);
+  return (
+    <div className="p-4 w-[100%]">
+      <div className="mb-4">
+        <div className="bg-gray-100 p-4 rounded-lg shadow-md">
+          <div className="flex items-center space-x-2">
+            <div className="bg-blue-500 w-2 h-2 rounded-full"></div>
+            <div className="text-gray-500">Project</div>
+            <div className="mx-2 text-gray-500 font-bold">&#62;</div>
+            <h2 className="text-blue-500">{projectName}</h2>
+          </div>
+        </div>
+      </div>
+      <div>
+        <Tabs defaultValue="task" className="w-full">
+          <TabsList className="flex w-[200px]">
+            <TabsTrigger className="flex flex-1" value="task">
+              Task
+            </TabsTrigger>
+            <TabsTrigger className="flex flex-1" value="user">
+              User
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="task">
+            <TaskCreation />
+          </TabsContent>
+          <TabsContent value="user">
+            <UserCreation />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
