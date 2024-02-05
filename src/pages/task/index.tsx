@@ -5,7 +5,7 @@ import moment from "moment";
 import { ColumnDef } from "@tanstack/react-table";
 import { CreateTaskModal } from "./createTaskModal";
 
-function TaskCreation() {
+function TaskCreation({ projectId }: any) {
   const [data, setData] = useState<any>([]);
   const [skip, setSkip] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -23,7 +23,7 @@ function TaskCreation() {
     },
     {
       accessorKey: "projectName",
-      header: () => <div className=" font-bold">Project Name</div>,
+      header: () => <div className=" font-bold">Task Name</div>,
     },
     {
       accessorKey: "createdAt",
@@ -95,7 +95,7 @@ function TaskCreation() {
           totalcount={count}
         />
       </div>
-      <CreateTaskModal open={open} onClose={onClose} />
+      <CreateTaskModal open={open} onClose={onClose} projectId={projectId} />
     </div>
   );
 }

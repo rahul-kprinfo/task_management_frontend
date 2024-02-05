@@ -4,8 +4,10 @@ import { DataTableDemo } from "../../components/tableComponent";
 import moment from "moment";
 import { ColumnDef } from "@tanstack/react-table";
 import { CreateUserModal } from "./createUserModal";
+import { useQuery } from "react-query";
+import UserServices from "../../services/user.service";
 
-function UserCreation() {
+function UserCreation({ projectId }: any) {
   const [data, setData] = useState<any>([]);
   const [skip, setSkip] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -15,6 +17,24 @@ function UserCreation() {
     setOpen(false);
   };
 
+  const getUserData = useQuery(
+    ["getUser"],
+    async () => {
+      const payload = { skip: (skip - 1) * limit, limit: limit };
+      return await UserServices.getUser(payload);
+    },
+    {
+      onSuccess: (res: any) => {
+        console.log("resss", res);
+        setData(res?.data);
+        setCount(res?.totalcount);
+      },
+      onError: (err: any) => {
+        console.log(err.response?.data || err);
+      },
+    }
+  );
+
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: "sno",
@@ -22,8 +42,16 @@ function UserCreation() {
       cell: ({ row }: any) => <div className="">{row.index + 1}</div>,
     },
     {
-      accessorKey: "projectName",
-      header: () => <div className=" font-bold">Project Name</div>,
+      accessorKey: "name",
+      header: () => <div className=" font-bold">User Name</div>,
+    },
+    {
+      accessorKey: "email",
+      header: () => <div className=" font-bold">Email</div>,
+    },
+    {
+      accessorKey: "role",
+      header: () => <div className=" font-bold">Role</div>,
     },
     {
       accessorKey: "createdAt",
@@ -95,7 +123,12 @@ function UserCreation() {
           totalcount={count}
         />
       </div>
-      <CreateUserModal open={open} onClose={onClose} />
+      <CreateUserModal
+        open={open}
+        onClose={onClose}
+        projectId={projectId}
+        fethhData={getUserData.refetch}
+      />
     </div>
   );
 }

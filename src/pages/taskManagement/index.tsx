@@ -11,8 +11,8 @@ import { useLocation } from "react-router-dom";
 export default function TaskManagement() {
   const state = useLocation();
   const projectName = state?.state?.projectName;
+  const projectId = state?.state.projectId;
 
-  console.log("state", state);
   return (
     <div className="p-4 w-[100%]">
       <div className="mb-4">
@@ -36,10 +36,10 @@ export default function TaskManagement() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="task">
-            <TaskCreation />
+            <TaskCreation projectId={projectId} />
           </TabsContent>
           <TabsContent value="user">
-            <UserCreation />
+            <UserCreation projectId={projectId} />
           </TabsContent>
         </Tabs>
       </div>

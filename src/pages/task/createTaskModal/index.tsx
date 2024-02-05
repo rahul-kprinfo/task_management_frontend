@@ -16,10 +16,12 @@ import { useMutation } from "react-query";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import CustomSelect from "../../../components/customSelect";
+import TaskServices from "../../../services/task.service";
 
 export function CreateTaskModal({
   open,
   onClose,
+  projectId,
 }: // refetch,
 // updateData,
 // isEdit,
@@ -32,6 +34,7 @@ any) {
       estimation: "",
       description: "",
       priority: "",
+      projectId: projectId,
     },
     validationSchema: Yup.object({
       taskName: Yup.string().required("Task Name is required"),
@@ -41,11 +44,11 @@ any) {
       priority: Yup.string().required("Priority is required"),
     }),
     onSubmit: (values: any) => {
-      // if (isEdit) {
-      //   updateProject(values);
-      // } else {
-      //   createProject(values);
-      // }
+      if (isEdit) {
+        // updateProject(values);
+      } else {
+        createProject(values);
+      }
     },
   });
   // useEffect(() => {
@@ -56,7 +59,7 @@ any) {
 
   const { mutate: createProject } = useMutation<any, Error>(
     async (payload: any) => {
-      return await ProjectServices.createProject(payload);
+      return await TaskServices.createTask(payload);
     },
     {
       onSuccess: (res: any) => {
@@ -157,6 +160,7 @@ any) {
               <Input
                 onChange={formik.handleChange}
                 id="estimation"
+                type="date"
                 value={formik?.values?.estimation}
                 // onBlur={formik.handleBlur}
                 className="col-span-3"

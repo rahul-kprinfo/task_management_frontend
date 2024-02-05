@@ -16,10 +16,13 @@ import { useMutation } from "react-query";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import CustomSelect from "../../../components/customSelect";
+import UserServices from "../../../services/user.service";
 
 export function CreateUserModal({
   open,
   onClose,
+  projectId,
+  fethhData,
 }: // refetch,
 // updateData,
 // isEdit,
@@ -27,25 +30,22 @@ export function CreateUserModal({
 any) {
   const formik: any = useFormik({
     initialValues: {
-      taskName: "",
-      user: "",
-      estimation: "",
-      description: "",
-      priority: "",
+      name: "",
+      email: "",
+      role: "",
+      projectId: projectId,
     },
     validationSchema: Yup.object({
-      taskName: Yup.string().required("Task Name is required"),
-      user: Yup.string().required("User Name is required"),
-      estimation: Yup.string().required("Estimation is required"),
-      description: Yup.string().required("Description is required"),
-      priority: Yup.string().required("Priority is required"),
+      name: Yup.string().required("User Name is required"),
+      email: Yup.string().required("Email is required"),
+      role: Yup.string().required("Role is required"),
     }),
     onSubmit: (values: any) => {
-      // if (isEdit) {
-      //   updateProject(values);
-      // } else {
-      //   createProject(values);
-      // }
+      if (isEdit) {
+        // updateProject(values);
+      } else {
+        createProject(values);
+      }
     },
   });
   // useEffect(() => {
@@ -56,7 +56,7 @@ any) {
 
   const { mutate: createProject } = useMutation<any, Error>(
     async (payload: any) => {
-      return await ProjectServices.createProject(payload);
+      return await UserServices.createUser(payload);
     },
     {
       onSuccess: (res: any) => {
@@ -64,7 +64,7 @@ any) {
         //   navigate("/");
         formik.resetForm();
         onClose();
-        // refetch();
+        fethhData();
       },
       onError: (err: any) => {
         toast.error(err?.response?.data?.message);
