@@ -6,7 +6,7 @@ class TaskService {
   };
 
   getTask = async (payload:any) => {
-    return await apiInstance.post("//get-task", payload);
+    return await apiInstance.post("/get-task", payload);
   };
 
   upateTask = async (id: any, payload:any) => {

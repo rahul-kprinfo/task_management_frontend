@@ -11,26 +11,30 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../../../components/ui/sheet";
-import ProjectServices from "../../../services/project.service";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CustomSelect from "../../../components/customSelect";
 import TaskServices from "../../../services/task.service";
-
+import UserServices from "../../../services/user.service";
+import UCustomSelect from "../../../components/userCustomSelect";
 export function CreateTaskModal({
   open,
   onClose,
   projectId,
-}: // refetch,
-// updateData,
-// isEdit,
-// setIsEdit,
-any) {
+  fetchData,
+  isEdit,
+  updateData,
+  setIsEdit,
+}: any) {
+  const [user, setUser] = useState([]);
+  const today = new Date().toISOString().slice(0, 10);
+
   const formik: any = useFormik({
     initialValues: {
       taskName: "",
       user: "",
+      projectUserId: "",
       estimation: "",
       description: "",
       priority: "",
@@ -45,17 +49,23 @@ any) {
     }),
     onSubmit: (values: any) => {
       if (isEdit) {
-        // updateProject(values);
+        updateTask(values);
       } else {
         createProject(values);
       }
     },
   });
-  // useEffect(() => {
-  //   formik.setValues({
-  //     projectName: updateData?.projectName || "",
-  //   });
-  // }, [updateData]);
+  useEffect(() => {
+    formik.setValues({
+      taskName: updateData?.taskName || "",
+      user: updateData?.user || "",
+      estimation: updateData?.estimation || "",
+      description: updateData?.description || "",
+      priority: updateData?.priority || "",
+      projectId: projectId,
+      projectUserId: updateData?.projectUserId || "",
+    });
+  }, [updateData, isEdit]);
 
   const { mutate: createProject } = useMutation<any, Error>(
     async (payload: any) => {
@@ -64,33 +74,59 @@ any) {
     {
       onSuccess: (res: any) => {
         toast.success(res?.message);
-        //   navigate("/");
         formik.resetForm();
         onClose();
-        // refetch();
+        fetchData();
       },
       onError: (err: any) => {
         toast.error(err?.response?.data?.message);
       },
     }
   );
-  // const { mutate: updateProject } = useMutation<any, Error>(
-  //   async (payload: any) => {
-  //     return await ProjectServices.upateProject(updateData?.id, payload);
-  //   },
-  //   {
-  //     onSuccess: (res: any) => {
-  //       toast.success(res?.message);
-  //       formik.resetForm();
-  //       onClose();
-  //       // refetch();
-  //       // setIsEdit(false);
-  //     },
-  //     onError: (err: any) => {
-  //       toast.error(err?.response?.data?.message);
-  //     },
-  //   }
-  // );
+  const { mutate: updateTask } = useMutation<any, Error>(
+    async (payload: any) => {
+      return await TaskServices.upateTask(updateData?.id, payload);
+    },
+    {
+      onSuccess: (res: any) => {
+        toast.success(res?.message);
+        formik.resetForm();
+        onClose();
+        fetchData();
+        setIsEdit(false);
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message);
+      },
+    }
+  );
+
+  const getUserData = useQuery(
+    ["getUsers"],
+    async () => {
+      const payload = {
+        skip: 0,
+        limit: 100,
+        projectId: projectId,
+      };
+      return await UserServices.getUser(payload);
+    },
+    {
+      onSuccess: (res: any) => {
+        const resArr = res?.data?.map((val: any) => {
+          return {
+            id: val.id,
+            label: val.name,
+            value: val.name,
+          };
+        });
+        setUser(resArr);
+      },
+      onError: (err: any) => {
+        console.log(err.response?.data || err);
+      },
+    }
+  );
 
   const priorityOptions = [
     { label: "High", value: "high" },
@@ -103,17 +139,18 @@ any) {
       formik.resetForm();
     }
   }, [open]);
-  const isEdit = false;
+
   const title = isEdit ? "Update Task" : "Create Task";
   return (
     <Sheet
+      key="left"
       open={open}
       onOpenChange={() => {
         onClose();
-        // setIsEdit(false);
+        setIsEdit(false);
       }}
     >
-      <SheetContent>
+      <SheetContent key="left">
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
@@ -127,7 +164,6 @@ any) {
                 onChange={formik.handleChange}
                 id="taskName"
                 value={formik?.values?.taskName}
-                // onBlur={formik.handleBlur}
                 className="col-span-3"
                 placeholder="Enter Task Name"
               />
@@ -141,10 +177,12 @@ any) {
               <Label htmlFor="user" className="text-right">
                 Select User
               </Label>
-              <CustomSelect
-                options={priorityOptions}
+              <UCustomSelect
+                defaultVal={formik?.values?.user}
+                options={user}
                 customOnChange={(e: any) => {
-                  formik.setFieldValue("user", e);
+                  formik.setFieldValue("user", e?.value);
+                  formik.setFieldValue("projectUserId", e?.id);
                 }}
                 styles={""}
                 placeholder="Select User"
@@ -161,8 +199,8 @@ any) {
                 onChange={formik.handleChange}
                 id="estimation"
                 type="date"
+                min={today}
                 value={formik?.values?.estimation}
-                // onBlur={formik.handleBlur}
                 className="col-span-3"
                 placeholder="Enter Project Name"
               />
@@ -180,7 +218,6 @@ any) {
                 onChange={formik.handleChange}
                 id="description"
                 value={formik?.values?.description}
-                // onBlur={formik.handleBlur}
                 className="col-span-3"
                 placeholder="Description"
               />
@@ -195,6 +232,7 @@ any) {
                 Priority
               </Label>
               <CustomSelect
+                defaultVal={formik?.values?.priority}
                 options={priorityOptions}
                 customOnChange={(e: any) => {
                   formik.setFieldValue("priority", e);

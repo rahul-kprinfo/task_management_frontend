@@ -11,7 +11,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../../../components/ui/sheet";
-import ProjectServices from "../../../services/project.service";
 import { useMutation } from "react-query";
 import { toast } from "sonner";
 import { useEffect } from "react";
@@ -23,11 +22,10 @@ export function CreateUserModal({
   onClose,
   projectId,
   fethhData,
-}: // refetch,
-// updateData,
-// isEdit,
-// setIsEdit,
-any) {
+  updateData,
+  isEdit,
+  setIsEdit,
+}: any) {
   const formik: any = useFormik({
     initialValues: {
       name: "",
@@ -42,17 +40,20 @@ any) {
     }),
     onSubmit: (values: any) => {
       if (isEdit) {
-        // updateProject(values);
+        updateUser(values);
       } else {
         createProject(values);
       }
     },
   });
-  // useEffect(() => {
-  //   formik.setValues({
-  //     projectName: updateData?.projectName || "",
-  //   });
-  // }, [updateData]);
+  useEffect(() => {
+    formik.setValues({
+      name: updateData?.name || "",
+      email: updateData?.email || "",
+      role: updateData?.role || "",
+      projectId: projectId,
+    });
+  }, [updateData, isEdit]);
 
   const { mutate: createProject } = useMutation<any, Error>(
     async (payload: any) => {
@@ -61,7 +62,6 @@ any) {
     {
       onSuccess: (res: any) => {
         toast.success(res?.message);
-        //   navigate("/");
         formik.resetForm();
         onClose();
         fethhData();
@@ -71,43 +71,37 @@ any) {
       },
     }
   );
-  // const { mutate: updateProject } = useMutation<any, Error>(
-  //   async (payload: any) => {
-  //     return await ProjectServices.upateProject(updateData?.id, payload);
-  //   },
-  //   {
-  //     onSuccess: (res: any) => {
-  //       toast.success(res?.message);
-  //       formik.resetForm();
-  //       onClose();
-  //       // refetch();
-  //       // setIsEdit(false);
-  //     },
-  //     onError: (err: any) => {
-  //       toast.error(err?.response?.data?.message);
-  //     },
-  //   }
-  // );
-
-  const rolesOptions = [
-    { label: "Admin", value: "admin" },
-    { label: "SuperAdmin", value: "superadmin" },
-    { label: "User", value: "user" },
-  ];
+  const { mutate: updateUser } = useMutation<any, Error>(
+    async (payload: any) => {
+      return await UserServices.updateUser(updateData?.id, payload);
+    },
+    {
+      onSuccess: (res: any) => {
+        toast.success(res?.message);
+        formik.resetForm();
+        onClose();
+        fethhData();
+        setIsEdit(false);
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message);
+      },
+    }
+  );
 
   useEffect(() => {
     if (open === false) {
       formik.resetForm();
     }
   }, [open]);
-  const isEdit = false;
+
   const title = isEdit ? "Update User" : "Create User";
   return (
     <Sheet
       open={open}
       onOpenChange={() => {
         onClose();
-        // setIsEdit(false);
+        setIsEdit(false);
       }}
     >
       <SheetContent>
@@ -124,7 +118,6 @@ any) {
                 onChange={formik.handleChange}
                 id="name"
                 value={formik?.values?.name}
-                // onBlur={formik.handleBlur}
                 className="col-span-3"
                 placeholder="Enter Name"
               />
@@ -139,8 +132,7 @@ any) {
               <Input
                 onChange={formik.handleChange}
                 id="email"
-                value={formik?.values?.estimation}
-                // onBlur={formik.handleBlur}
+                value={formik?.values?.email}
                 className="col-span-3"
                 placeholder="Enter Email"
               />
@@ -152,13 +144,12 @@ any) {
               <Label htmlFor="role" className="text-right">
                 Role
               </Label>
-              <CustomSelect
-                options={rolesOptions}
-                customOnChange={(e: any) => {
-                  formik.setFieldValue("role", e);
-                }}
-                styles={""}
-                placeholder="Select Role"
+              <Input
+                onChange={formik.handleChange}
+                id="role"
+                value={formik?.values?.role}
+                className="col-span-3"
+                placeholder="Enter Role"
               />
               {formik.touched.role && formik.errors.role ? (
                 <div className="ml-0 text-red-600">{formik.errors.role}</div>

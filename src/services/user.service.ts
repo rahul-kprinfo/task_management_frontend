@@ -9,7 +9,7 @@ class UserService {
     return await apiInstance.post("/get-users", payload);
   };
 
-  upateUser = async (id: any, payload:any) => {
+  updateUser = async (id: any, payload:any) => {
     return await apiInstance.patch(`/update-user/${id}`, payload);
   };
 

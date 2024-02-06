@@ -49,7 +49,6 @@ function Login() {
       },
       onError: (err: any) => {
         toast.error(err?.response?.data?.message);
-        console.log("errr", err);
       },
     }
   );
@@ -80,7 +79,6 @@ function Login() {
                 name="email"
                 className="p-[10px] rounded-[5px] bg-gray-100"
                 placeholder="Email"
-                onBlur={formik.handleBlur}
                 value={formik.values.email}
                 onChange={formik.handleChange}
               />
@@ -96,7 +94,6 @@ function Login() {
                 name="password"
                 placeholder="Password"
                 className="p-[10px] rounded-[5px] bg-gray-100"
-                onBlur={formik.handleBlur}
                 value={formik.values.password}
                 onChange={formik.handleChange}
               />

@@ -14,16 +14,27 @@ interface MyComponentProps {
   defaultVal?: any;
 }
 
-const CustomSelect = ({
+const UCustomSelect = ({
   placeholder,
   options,
   styles,
   customOnChange,
   defaultVal,
 }: MyComponentProps) => {
-  console.log("defaultVal", defaultVal);
+  //   console.log("defaultVal", defaultVal);
   return (
-    <Select onValueChange={(e) => customOnChange(e)} value={defaultVal}>
+    <Select
+      onValueChange={(e) => {
+        {
+          const values = options.find((val: any) => {
+            return val.value === e;
+          });
+
+          customOnChange(values);
+        }
+      }}
+      value={defaultVal}
+    >
       <SelectTrigger className={styles}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
@@ -39,4 +50,4 @@ const CustomSelect = ({
   );
 };
 
-export default CustomSelect;
+export default UCustomSelect;

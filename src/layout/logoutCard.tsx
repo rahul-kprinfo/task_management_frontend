@@ -10,11 +10,11 @@ import { TbLogout2 } from "react-icons/tb";
 import { AlertDialogDemo } from "../components/alertBox";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { FaUser } from "react-icons/fa";
 
 export default function LogoutCard() {
   const [alertOpen, setAlertOpen] = useState(false);
   const user = useSelector((state: any) => state.auth.user);
-  console.log("user", user);
 
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -43,8 +43,8 @@ export default function LogoutCard() {
         </HoverCardTrigger>
         <HoverCardContent>
           <div className="">
-            <div className="flex items-center gap-2">
-              {/* <CgProfile size={20} /> */}
+            <div className="flex items-center gap-2 p-2">
+              <FaUser size={32} />
               <div>
                 <span className="font-semibold">Name: </span>
                 <span>{name}</span>
@@ -53,12 +53,12 @@ export default function LogoutCard() {
                 <span>{email}</span>
               </div>
             </div>
-            <Separator />
+            <Separator className="" />
             <div
               onClick={() => {
                 setAlertOpen(true);
               }}
-              className="flex items-center gap-2 cursor-pointer"
+              className="flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-100"
             >
               <TbLogout2 />
               <div className="font-medium">Logout</div>

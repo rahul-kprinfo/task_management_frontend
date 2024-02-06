@@ -11,7 +11,7 @@ export const Navbar1 = () => {
     navigate("/");
   };
   return (
-    <nav className=" h-[70px] shadow-md py-6 mb-2">
+    <nav className=" h-[70px] shadow-md py-6 mb-0">
       <div className="flex justify-between mr-12 ml-4 items-center">
         <h1 className="text-center text-2xl font-extrabold">Task Management</h1>
         <LogoutCard />

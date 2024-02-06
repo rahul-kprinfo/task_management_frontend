@@ -43,7 +43,7 @@ export function SheetDemo({
     formik.setValues({
       projectName: updateData?.projectName || "",
     });
-  }, [updateData]);
+  }, [updateData, isEdit]);
 
   const { mutate: createProject } = useMutation<any, Error>(
     async (payload: any) => {
@@ -52,7 +52,6 @@ export function SheetDemo({
     {
       onSuccess: (res: any) => {
         toast.success(res?.message);
-        //   navigate("/");
         formik.resetForm();
         onClose();
         refetch();
@@ -69,7 +68,6 @@ export function SheetDemo({
     {
       onSuccess: (res: any) => {
         toast.success(res?.message);
-        //   navigate("/");
         formik.resetForm();
         onClose();
         refetch();
@@ -110,7 +108,6 @@ export function SheetDemo({
                 onChange={formik.handleChange}
                 id="projectName"
                 value={formik?.values?.projectName}
-                // onBlur={formik.handleBlur}
                 className="col-span-3"
                 placeholder="Enter Project Name"
               />

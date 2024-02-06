@@ -18,8 +18,8 @@ export default function LayoutWrapper({ children }: ILayoutProps) {
   return (
     <div>
       <Navbar1 />
-      <div className="flex">
-        <nav className="basis-72 shadow-md h-screen mt-0 p-0">
+      <div className="flex mt-0 pt-0">
+        <nav className="basis-72 shadow-[rgba(0.5,0,0,0.5)_0px_4px_8px_0px] h-screen mt-0 pt-0">
           <CustomNavbar
             routes={routeConfig.filter((route: any) => route.showInNavigate)}
           />

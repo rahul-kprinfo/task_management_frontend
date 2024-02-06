@@ -4,6 +4,10 @@ import { DataTableDemo } from "../../components/tableComponent";
 import moment from "moment";
 import { ColumnDef } from "@tanstack/react-table";
 import { CreateTaskModal } from "./createTaskModal";
+import TaskServices from "../../services/task.service";
+import { useMutation, useQuery } from "react-query";
+import { toast } from "sonner";
+import { AlertDialogDemo } from "../../components/alertBox";
 
 function TaskCreation({ projectId }: any) {
   const [data, setData] = useState<any>([]);
@@ -11,9 +15,63 @@ function TaskCreation({ projectId }: any) {
   const [limit, setLimit] = useState(10);
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [taskId, setTaskId] = useState<any>();
+  const [isEdit, setIsEdit] = useState(false);
+  const [updateData, setUpdateData] = useState<any>({});
+  const desc =
+    "This action cannot be undone. This will permanently delete your data.";
+
   const onClose = () => {
     setOpen(false);
   };
+  const alertClose = () => {
+    setAlertOpen(false);
+  };
+
+  const alertConfirm = () => {
+    deleteTask(taskId);
+    setAlertOpen(false);
+  };
+
+  const getUserData = useQuery(
+    ["getTasks"],
+    async () => {
+      const payload = {
+        skip: (skip - 1) * limit,
+        limit: limit,
+        projectId: projectId,
+      };
+      return await TaskServices.getTask(payload);
+    },
+    {
+      onSuccess: (res: any) => {
+        setData(res?.data);
+        setCount(res?.totalcount);
+      },
+      onError: (err: any) => {
+        console.log(err.response?.data || err);
+      },
+    }
+  );
+
+  const { mutate: deleteTask } = useMutation<any, Error>(
+    async (payload: any) => {
+      return await TaskServices.deleteTask(payload);
+    },
+    {
+      onSuccess: (res: any) => {
+        toast.success(res?.message);
+        //   navigate("/");
+        // formik.resetForm();
+        // onClose();
+        getUserData.refetch();
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message);
+      },
+    }
+  );
 
   const columns: ColumnDef<any>[] = [
     {
@@ -22,12 +80,24 @@ function TaskCreation({ projectId }: any) {
       cell: ({ row }: any) => <div className="">{row.index + 1}</div>,
     },
     {
-      accessorKey: "projectName",
+      accessorKey: "taskName",
       header: () => <div className=" font-bold">Task Name</div>,
     },
     {
+      accessorKey: "user",
+      header: () => <div className=" font-bold">Assignee Name</div>,
+    },
+    {
+      accessorKey: "estimation",
+      header: () => <div className=" font-bold">Estimation</div>,
+    },
+    {
+      accessorKey: "priority",
+      header: () => <div className=" font-bold">Priority</div>,
+    },
+    {
       accessorKey: "createdAt",
-      header: () => <div className=" font-bold">Date</div>,
+      header: () => <div className=" font-bold">Created Date</div>,
       cell: ({ row }: any) => {
         return (
           <div className="">
@@ -47,9 +117,9 @@ function TaskCreation({ projectId }: any) {
           <div className="flex  justify-center">
             <Button
               onClick={() => {
-                // setUpdateData(row.original);
-                // setIsEdit(true);
-                // setOpen(true);
+                setUpdateData(row.original);
+                setIsEdit(true);
+                setOpen(true);
               }}
               variant="ghost"
             >
@@ -57,8 +127,8 @@ function TaskCreation({ projectId }: any) {
             </Button>
             <Button
               onClick={() => {
-                // setAlertOpen(true);
-                // setDeleteId(row.original.id);
+                setAlertOpen(true);
+                setTaskId(row.original.id);
               }}
               variant="ghost"
             >
@@ -95,7 +165,22 @@ function TaskCreation({ projectId }: any) {
           totalcount={count}
         />
       </div>
-      <CreateTaskModal open={open} onClose={onClose} projectId={projectId} />
+      <CreateTaskModal
+        open={open}
+        onClose={onClose}
+        projectId={projectId}
+        fetchData={getUserData.refetch}
+        isEdit={isEdit}
+        updateData={updateData}
+        setIsEdit={setIsEdit}
+      />
+      <AlertDialogDemo
+        open={alertOpen}
+        onClose={alertClose}
+        onConfirm={alertConfirm}
+        title="Are you sure you want to delete this?"
+        desc={desc}
+      />
     </div>
   );
 }

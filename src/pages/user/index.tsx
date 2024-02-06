@@ -4,8 +4,10 @@ import { DataTableDemo } from "../../components/tableComponent";
 import moment from "moment";
 import { ColumnDef } from "@tanstack/react-table";
 import { CreateUserModal } from "./createUserModal";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import UserServices from "../../services/user.service";
+import { toast } from "sonner";
+import { AlertDialogDemo } from "../../components/alertBox";
 
 function UserCreation({ projectId }: any) {
   const [data, setData] = useState<any>([]);
@@ -13,6 +15,22 @@ function UserCreation({ projectId }: any) {
   const [limit, setLimit] = useState(10);
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [userId, setUserId] = useState<any>();
+  const [isEdit, setIsEdit] = useState(false);
+  const [updateData, setUpdateData] = useState<any>({});
+  const desc =
+    "This action cannot be undone. This will permanently delete your data.";
+
+  const alertClose = () => {
+    setAlertOpen(false);
+  };
+
+  const alertConfirm = () => {
+    deleteUser(userId);
+    setAlertOpen(false);
+  };
+
   const onClose = () => {
     setOpen(false);
   };
@@ -20,17 +38,38 @@ function UserCreation({ projectId }: any) {
   const getUserData = useQuery(
     ["getUser"],
     async () => {
-      const payload = { skip: (skip - 1) * limit, limit: limit };
+      const payload = {
+        skip: (skip - 1) * limit,
+        limit: limit,
+        projectId: projectId,
+      };
       return await UserServices.getUser(payload);
     },
     {
       onSuccess: (res: any) => {
-        console.log("resss", res);
         setData(res?.data);
         setCount(res?.totalcount);
       },
       onError: (err: any) => {
         console.log(err.response?.data || err);
+      },
+    }
+  );
+
+  const { mutate: deleteUser } = useMutation<any, Error>(
+    async (payload: any) => {
+      return await UserServices.deleteUser(payload);
+    },
+    {
+      onSuccess: (res: any) => {
+        toast.success(res?.message);
+        //   navigate("/");
+        // formik.resetForm();
+        // onClose();
+        getUserData.refetch();
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message);
       },
     }
   );
@@ -75,9 +114,9 @@ function UserCreation({ projectId }: any) {
           <div className="flex  justify-center">
             <Button
               onClick={() => {
-                // setUpdateData(row.original);
-                // setIsEdit(true);
-                // setOpen(true);
+                setUpdateData(row.original);
+                setIsEdit(true);
+                setOpen(true);
               }}
               variant="ghost"
             >
@@ -85,8 +124,8 @@ function UserCreation({ projectId }: any) {
             </Button>
             <Button
               onClick={() => {
-                // setAlertOpen(true);
-                // setDeleteId(row.original.id);
+                setAlertOpen(true);
+                setUserId(row.original.id);
               }}
               variant="ghost"
             >
@@ -128,6 +167,16 @@ function UserCreation({ projectId }: any) {
         onClose={onClose}
         projectId={projectId}
         fethhData={getUserData.refetch}
+        isEdit={isEdit}
+        updateData={updateData}
+        setIsEdit={setIsEdit}
+      />
+      <AlertDialogDemo
+        open={alertOpen}
+        onClose={alertClose}
+        onConfirm={alertConfirm}
+        title="Are you sure you want to delete this?"
+        desc={desc}
       />
     </div>
   );

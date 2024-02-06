@@ -44,7 +44,6 @@ export default function Home() {
     },
     {
       onSuccess: (res: any) => {
-        console.log("resss", res);
         setData(res?.data);
         setCount(res?.totalcount);
       },
@@ -65,7 +64,6 @@ export default function Home() {
       },
       onError: (err: any) => {
         toast.error(err?.response?.data?.message);
-        console.log("errr", err);
       },
     }
   );
