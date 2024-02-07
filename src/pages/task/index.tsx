@@ -8,6 +8,7 @@ import TaskServices from "../../services/task.service";
 import { useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
 import { AlertDialogDemo } from "../../components/alertBox";
+import TaskView from "../../components/taskViewComponent";
 
 function TaskCreation({ projectId }: any) {
   const [data, setData] = useState<any>([]);
@@ -19,6 +20,8 @@ function TaskCreation({ projectId }: any) {
   const [taskId, setTaskId] = useState<any>();
   const [isEdit, setIsEdit] = useState(false);
   const [updateData, setUpdateData] = useState<any>({});
+  const [openView, setOpenView] = useState(false);
+  const [viewData, setViewData] = useState<any>();
   const desc =
     "This action cannot be undone. This will permanently delete your data.";
 
@@ -32,6 +35,10 @@ function TaskCreation({ projectId }: any) {
   const alertConfirm = () => {
     deleteTask(taskId);
     setAlertOpen(false);
+  };
+
+  const closeView = () => {
+    setOpenView(false);
   };
 
   const getUserData = useQuery(
@@ -62,10 +69,22 @@ function TaskCreation({ projectId }: any) {
     {
       onSuccess: (res: any) => {
         toast.success(res?.message);
-        //   navigate("/");
-        // formik.resetForm();
-        // onClose();
         getUserData.refetch();
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message);
+      },
+    }
+  );
+
+  const { mutate: getTaskById } = useMutation<any, Error>(
+    async (payload: any) => {
+      return await TaskServices.getTaskById(payload);
+    },
+    {
+      onSuccess: (res: any) => {
+        // console.log("ress", res);
+        setViewData(res?.data);
       },
       onError: (err: any) => {
         toast.error(err?.response?.data?.message);
@@ -96,6 +115,29 @@ function TaskCreation({ projectId }: any) {
       header: () => <div className=" font-bold">Priority</div>,
     },
     {
+      accessorKey: "taskStatus",
+      header: () => <div className=" font-bold">Status</div>,
+      cell: ({ row }: any) => {
+        if (row.original.taskStatus === "Yet to Start") {
+          return (
+            <div className="text-[#FF6347]">{row.getValue("taskStatus")}</div>
+          );
+        } else if (row.original.taskStatus === "Pending") {
+          return (
+            <div className="text-[#FFD700]">{row.getValue("taskStatus")}</div>
+          );
+        } else if (row.original.taskStatus === "In-Progress") {
+          return (
+            <div className="text-[#87CEEB]">{row.getValue("taskStatus")}</div>
+          );
+        } else if (row.original.taskStatus === "Completed") {
+          return (
+            <div className="text-[#32CD32]">{row.getValue("taskStatus")}</div>
+          );
+        }
+      },
+    },
+    {
       accessorKey: "createdAt",
       header: () => <div className=" font-bold">Created Date</div>,
       cell: ({ row }: any) => {
@@ -115,6 +157,15 @@ function TaskCreation({ projectId }: any) {
       cell: ({ row }: any) => {
         return (
           <div className="flex  justify-center">
+            <Button
+              onClick={() => {
+                getTaskById(row.original.id);
+                setOpenView(true);
+              }}
+              variant="ghost"
+            >
+              View
+            </Button>
             <Button
               onClick={() => {
                 setUpdateData(row.original);
@@ -181,6 +232,7 @@ function TaskCreation({ projectId }: any) {
         title="Are you sure you want to delete this?"
         desc={desc}
       />
+      <TaskView open={openView} onClose={closeView} viewData={viewData} />
     </div>
   );
 }

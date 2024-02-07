@@ -26,10 +26,9 @@ const UCustomSelect = ({
     <Select
       onValueChange={(e) => {
         {
-          const values = options.find((val: any) => {
-            return val.value === e;
+          const values = options?.find((val: any) => {
+            return val?.value === e;
           });
-
           customOnChange(values);
         }
       }}

@@ -28,6 +28,7 @@ export function CreateTaskModal({
   setIsEdit,
 }: any) {
   const [user, setUser] = useState([]);
+  const [taskOption, setTaskOption] = useState<any>([]);
   const today = new Date().toISOString().slice(0, 10);
 
   const formik: any = useFormik({
@@ -39,6 +40,8 @@ export function CreateTaskModal({
       description: "",
       priority: "",
       projectId: projectId,
+      parentTaskId: 0,
+      taskStatus: "",
     },
     validationSchema: Yup.object({
       taskName: Yup.string().required("Task Name is required"),
@@ -46,6 +49,7 @@ export function CreateTaskModal({
       estimation: Yup.string().required("Estimation is required"),
       description: Yup.string().required("Description is required"),
       priority: Yup.string().required("Priority is required"),
+      taskStatus: Yup.string().required("Priority is required"),
     }),
     onSubmit: (values: any) => {
       if (isEdit) {
@@ -64,6 +68,8 @@ export function CreateTaskModal({
       priority: updateData?.priority || "",
       projectId: projectId,
       projectUserId: updateData?.projectUserId || "",
+      parentTaskId: updateData?.parentTaskId || 0,
+      taskStatus: updateData?.taskStatus || "",
     });
   }, [updateData, isEdit]);
 
@@ -128,10 +134,44 @@ export function CreateTaskModal({
     }
   );
 
+  const getTaskData = useQuery(
+    ["getTasksId"],
+    async () => {
+      const payload = {
+        skip: 0,
+        limit: 100,
+        projectId: projectId,
+      };
+      return await TaskServices.getTask(payload);
+    },
+    {
+      onSuccess: (res: any) => {
+        const modiFiedData = res?.data?.map((i: any) => {
+          return {
+            label: i?.taskName,
+            value: i?.taskName,
+            id: i.id,
+          };
+        });
+        setTaskOption(modiFiedData);
+      },
+      onError: (err: any) => {
+        console.log(err.response?.data || err);
+      },
+    }
+  );
+
   const priorityOptions = [
     { label: "High", value: "high" },
     { label: "Medium", value: "medium" },
     { label: "Low", value: "low" },
+  ];
+
+  const taskStatusOption = [
+    { label: "Yet to Start", value: "Yet to Start" },
+    { label: "Pending", value: "Pending" },
+    { label: "In-Progress", value: "In-Progress" },
+    { label: "Completed", value: "Completed" },
   ];
 
   useEffect(() => {
@@ -150,104 +190,141 @@ export function CreateTaskModal({
         setIsEdit(false);
       }}
     >
-      <SheetContent key="left">
+      <SheetContent className="overflow-y-auto">
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
-        <form action="">
-          <div className="grid gap-4 py-4">
-            <div className="">
-              <Label htmlFor="taskName" className="text-right">
-                Task Name
-              </Label>
-              <Input
-                onChange={formik.handleChange}
-                id="taskName"
-                value={formik?.values?.taskName}
-                className="col-span-3"
-                placeholder="Enter Task Name"
-              />
-              {formik.touched.taskName && formik.errors.taskName ? (
-                <div className="ml-0 text-red-600">
-                  {formik.errors.taskName}
-                </div>
-              ) : null}
+        <div className="">
+          <form action="">
+            <div className="grid gap-4 py-4">
+              <div className="">
+                <Label htmlFor="taskName" className="text-right">
+                  Task Name
+                </Label>
+                <Input
+                  onChange={formik.handleChange}
+                  id="taskName"
+                  value={formik?.values?.taskName}
+                  className="col-span-3"
+                  placeholder="Enter Task Name"
+                />
+                {formik.touched.taskName && formik.errors.taskName ? (
+                  <div className="ml-0 text-red-600">
+                    {formik.errors.taskName}
+                  </div>
+                ) : null}
+              </div>
+              <div className="">
+                <Label htmlFor="user" className="text-right">
+                  Select User
+                </Label>
+                <UCustomSelect
+                  defaultVal={formik?.values?.user}
+                  options={user}
+                  customOnChange={(e: any) => {
+                    formik.setFieldValue("user", e?.value);
+                    formik.setFieldValue("projectUserId", e?.id);
+                  }}
+                  styles={""}
+                  placeholder="Select User"
+                />
+                {formik.touched.user && formik.errors.user ? (
+                  <div className="ml-0 text-red-600">{formik.errors.user}</div>
+                ) : null}
+              </div>
+              <div className="">
+                <Label htmlFor="estimation" className="text-right">
+                  Estimation
+                </Label>
+                <Input
+                  onChange={formik.handleChange}
+                  id="estimation"
+                  type="date"
+                  min={today}
+                  value={formik?.values?.estimation}
+                  className="col-span-3"
+                  placeholder="Enter Project Name"
+                />
+                {formik.touched.estimation && formik.errors.estimation ? (
+                  <div className="ml-0 text-red-600">
+                    {formik.errors.estimation}
+                  </div>
+                ) : null}
+              </div>
+              <div className="">
+                <Label htmlFor="name" className="text-right">
+                  Description
+                </Label>
+                <Input
+                  onChange={formik.handleChange}
+                  id="description"
+                  value={formik?.values?.description}
+                  className="col-span-3"
+                  placeholder="Description"
+                />
+                {formik.touched.description && formik.errors.description ? (
+                  <div className="ml-0 text-red-600">
+                    {formik.errors.description}
+                  </div>
+                ) : null}
+              </div>
+              <div className="">
+                <Label htmlFor="name" className="text-right">
+                  Priority
+                </Label>
+                <CustomSelect
+                  defaultVal={formik?.values?.priority}
+                  options={priorityOptions}
+                  customOnChange={(e: any) => {
+                    formik.setFieldValue("priority", e);
+                  }}
+                  styles={""}
+                  placeholder="Select Priority"
+                />
+                {formik.touched.priority && formik.errors.priority ? (
+                  <div className="ml-0 text-red-600">
+                    {formik.errors.priority}
+                  </div>
+                ) : null}
+              </div>
+              <div className="">
+                <Label htmlFor="name" className="text-right">
+                  Status
+                </Label>
+                <CustomSelect
+                  defaultVal={formik?.values?.taskStatus}
+                  options={taskStatusOption}
+                  customOnChange={(e: any) => {
+                    formik.setFieldValue("taskStatus", e);
+                  }}
+                  styles={""}
+                  placeholder="Select Status"
+                />
+                {formik.touched.taskStatus && formik.errors.taskStatus ? (
+                  <div className="ml-0 text-red-600">
+                    {formik.errors.taskStatus}
+                  </div>
+                ) : null}
+              </div>
+              <div className="">
+                <Label htmlFor="user" className="text-right">
+                  Select Parent Task
+                </Label>
+                <UCustomSelect
+                  // defaultVal={formik?.values?.parentTaskId}
+                  options={taskOption}
+                  customOnChange={(e: any) => {
+                    // formik.setFieldValue("user", e?.value);
+                    formik.setFieldValue("parentTaskId", e?.id);
+                  }}
+                  styles={""}
+                  placeholder="Select Parent Task"
+                />
+              </div>
             </div>
-            <div className="">
-              <Label htmlFor="user" className="text-right">
-                Select User
-              </Label>
-              <UCustomSelect
-                defaultVal={formik?.values?.user}
-                options={user}
-                customOnChange={(e: any) => {
-                  formik.setFieldValue("user", e?.value);
-                  formik.setFieldValue("projectUserId", e?.id);
-                }}
-                styles={""}
-                placeholder="Select User"
-              />
-              {formik.touched.user && formik.errors.user ? (
-                <div className="ml-0 text-red-600">{formik.errors.user}</div>
-              ) : null}
-            </div>
-            <div className="">
-              <Label htmlFor="estimation" className="text-right">
-                Estimation
-              </Label>
-              <Input
-                onChange={formik.handleChange}
-                id="estimation"
-                type="date"
-                min={today}
-                value={formik?.values?.estimation}
-                className="col-span-3"
-                placeholder="Enter Project Name"
-              />
-              {formik.touched.estimation && formik.errors.estimation ? (
-                <div className="ml-0 text-red-600">
-                  {formik.errors.estimation}
-                </div>
-              ) : null}
-            </div>
-            <div className="">
-              <Label htmlFor="name" className="text-right">
-                Description
-              </Label>
-              <Input
-                onChange={formik.handleChange}
-                id="description"
-                value={formik?.values?.description}
-                className="col-span-3"
-                placeholder="Description"
-              />
-              {formik.touched.description && formik.errors.description ? (
-                <div className="ml-0 text-red-600">
-                  {formik.errors.description}
-                </div>
-              ) : null}
-            </div>
-            <div className="">
-              <Label htmlFor="name" className="text-right">
-                Priority
-              </Label>
-              <CustomSelect
-                defaultVal={formik?.values?.priority}
-                options={priorityOptions}
-                customOnChange={(e: any) => {
-                  formik.setFieldValue("priority", e);
-                }}
-                styles={""}
-                placeholder="Select Priority"
-              />
-              {formik.touched.priority && formik.errors.priority ? (
-                <div className="ml-0 text-red-600">
-                  {formik.errors.priority}
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
+
         <SheetFooter>
           <SheetClose asChild>
             <Button

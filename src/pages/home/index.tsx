@@ -80,7 +80,7 @@ export default function Home() {
       cell: ({ row }) => {
         return (
           <div
-            className="cursor-pointer"
+            className="cursor-pointer hover:underline hover:text-blue-500"
             onClick={() => {
               navigate("/taskManagement", {
                 state: {

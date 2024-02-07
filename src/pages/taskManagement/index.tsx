@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 export default function TaskManagement() {
   const state = useLocation();
   const projectName = state?.state?.projectName;
-  const projectId = state?.state.projectId;
+  const projectId = state?.state?.projectId;
   const navigate = useNavigate();
 
   return (
