@@ -18,6 +18,9 @@ import CustomSelect from "../../../components/customSelect";
 import TaskServices from "../../../services/task.service";
 import UserServices from "../../../services/user.service";
 import UCustomSelect from "../../../components/userCustomSelect";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import { divide } from "lodash";
 export function CreateTaskModal({
   open,
   onClose,
@@ -42,6 +45,7 @@ export function CreateTaskModal({
       projectId: projectId,
       parentTaskId: 0,
       taskStatus: "",
+      childTaskId: [],
     },
     validationSchema: Yup.object({
       taskName: Yup.string().required("Task Name is required"),
@@ -56,6 +60,7 @@ export function CreateTaskModal({
         updateTask(values);
       } else {
         createProject(values);
+        // console.log("values", values);
       }
     },
   });
@@ -70,6 +75,7 @@ export function CreateTaskModal({
       projectUserId: updateData?.projectUserId || "",
       parentTaskId: updateData?.parentTaskId || 0,
       taskStatus: updateData?.taskStatus || "",
+      childTaskId: [],
     });
   }, [updateData, isEdit]);
 
@@ -153,7 +159,14 @@ export function CreateTaskModal({
             id: i.id,
           };
         });
-        setTaskOption(modiFiedData);
+        if (isEdit) {
+          const removeCurrTask = modiFiedData?.filter((item: any) => {
+            return item?.id !== updateData?.id;
+          });
+          setTaskOption(removeCurrTask);
+        } else {
+          setTaskOption(modiFiedData);
+        }
       },
       onError: (err: any) => {
         console.log(err.response?.data || err);
@@ -161,17 +174,42 @@ export function CreateTaskModal({
     }
   );
 
+  useEffect(() => {
+    getTaskData.refetch();
+  }, [isEdit, open]);
+
   const priorityOptions = [
     { label: "High", value: "high" },
     { label: "Medium", value: "medium" },
     { label: "Low", value: "low" },
   ];
 
-  const taskStatusOption = [
-    { label: "Yet to Start", value: "Yet to Start" },
-    { label: "Pending", value: "Pending" },
-    { label: "In-Progress", value: "In-Progress" },
-    { label: "Completed", value: "Completed" },
+  type Status = {
+    value: string;
+    label: string;
+  };
+
+  const taskStatusOption: Status[] = [
+    {
+      value: "Backlog",
+      label: "Backlog",
+    },
+    {
+      value: "Todo",
+      label: "Todo",
+    },
+    {
+      value: "In Progress",
+      label: "In Progress",
+    },
+    {
+      value: "Done",
+      label: "Done",
+    },
+    {
+      value: "Canceled",
+      label: "Canceled",
+    },
   ];
 
   useEffect(() => {
@@ -319,6 +357,32 @@ export function CreateTaskModal({
                   }}
                   styles={""}
                   placeholder="Select Parent Task"
+                />
+              </div>
+              <div className="">
+                <Label htmlFor="user" className="">
+                  Select Child Task
+                </Label>
+                <Autocomplete
+                  disablePortal
+                  size="small"
+                  multiple
+                  onChange={(e: any, value: any) => {
+                    const selectedIds = value?.map((item: any) => item.id);
+                    formik.setFieldValue("childTaskId", selectedIds);
+                  }}
+                  id="combo-box-demo"
+                  options={taskOption}
+                  sx={{ width: "full" }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={<div className="text-sm text-black">Select</div>}
+                      // InputLabelProps={{
+                      //   shrink: false,
+                      // }}
+                    />
+                  )}
                 />
               </div>
             </div>

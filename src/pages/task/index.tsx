@@ -118,21 +118,25 @@ function TaskCreation({ projectId }: any) {
       accessorKey: "taskStatus",
       header: () => <div className=" font-bold">Status</div>,
       cell: ({ row }: any) => {
-        if (row.original.taskStatus === "Yet to Start") {
+        if (row.original.taskStatus === "Backlog") {
           return (
-            <div className="text-[#FF6347]">{row.getValue("taskStatus")}</div>
+            <div className="text-[#FFA500]">{row.getValue("taskStatus")}</div>
           );
-        } else if (row.original.taskStatus === "Pending") {
+        } else if (row.original.taskStatus === "Todo") {
           return (
-            <div className="text-[#FFD700]">{row.getValue("taskStatus")}</div>
+            <div className="text-[#FFFF00]">{row.getValue("taskStatus")}</div>
           );
-        } else if (row.original.taskStatus === "In-Progress") {
+        } else if (row.original.taskStatus === "In Progress") {
           return (
-            <div className="text-[#87CEEB]">{row.getValue("taskStatus")}</div>
+            <div className="text-[#00BFFF]">{row.getValue("taskStatus")}</div>
           );
-        } else if (row.original.taskStatus === "Completed") {
+        } else if (row.original.taskStatus === "Done") {
           return (
-            <div className="text-[#32CD32]">{row.getValue("taskStatus")}</div>
+            <div className="text-[#008000]">{row.getValue("taskStatus")}</div>
+          );
+        } else if (row.original.taskStatus === "Canceled") {
+          return (
+            <div className="text-[#FF0000]">{row.getValue("taskStatus")}</div>
           );
         }
       },

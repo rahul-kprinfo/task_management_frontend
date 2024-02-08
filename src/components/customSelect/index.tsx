@@ -21,7 +21,6 @@ const CustomSelect = ({
   customOnChange,
   defaultVal,
 }: MyComponentProps) => {
-  console.log("defaultVal", defaultVal);
   return (
     <Select onValueChange={(e) => customOnChange(e)} value={defaultVal}>
       <SelectTrigger className={styles}>
