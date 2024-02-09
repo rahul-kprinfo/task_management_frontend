@@ -9,6 +9,7 @@ import { useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
 import { AlertDialogDemo } from "../../components/alertBox";
 import TaskView from "../../components/taskViewComponent";
+import Loader from "../../components/spinner";
 
 function TaskCreation({ projectId }: any) {
   const [data, setData] = useState<any>([]);
@@ -22,6 +23,7 @@ function TaskCreation({ projectId }: any) {
   const [updateData, setUpdateData] = useState<any>({});
   const [openView, setOpenView] = useState(false);
   const [viewData, setViewData] = useState<any>();
+  const [isLoading, setIsLoading] = useState(false);
   const desc =
     "This action cannot be undone. This will permanently delete your data.";
 
@@ -80,10 +82,11 @@ function TaskCreation({ projectId }: any) {
   const { mutate: getTaskById } = useMutation<any, Error>(
     async (payload: any) => {
       return await TaskServices.getTaskById(payload);
+      setIsLoading(true);
     },
     {
       onSuccess: (res: any) => {
-        // console.log("ress", res);
+        setIsLoading(false);
         setViewData(res?.data);
       },
       onError: (err: any) => {
@@ -210,15 +213,19 @@ function TaskCreation({ projectId }: any) {
         </div>
       </div>
       <div className="mt-2">
-        <DataTableDemo
-          data={data}
-          columns={columns}
-          skip={skip}
-          take={limit}
-          setSkip={setSkip}
-          setTake={setLimit}
-          totalcount={count}
-        />
+        {getUserData?.isLoading ? (
+          <Loader isLoading={getUserData?.isLoading} />
+        ) : (
+          <DataTableDemo
+            data={data}
+            columns={columns}
+            skip={skip}
+            take={limit}
+            setSkip={setSkip}
+            setTake={setLimit}
+            totalcount={count}
+          />
+        )}
       </div>
       <CreateTaskModal
         open={open}
@@ -236,7 +243,11 @@ function TaskCreation({ projectId }: any) {
         title="Are you sure you want to delete this?"
         desc={desc}
       />
-      <TaskView open={openView} onClose={closeView} viewData={viewData} />
+      {isLoading ? (
+        <Loader isLoading={isLoading} />
+      ) : (
+        <TaskView open={openView} onClose={closeView} viewData={viewData} />
+      )}
     </div>
   );
 }

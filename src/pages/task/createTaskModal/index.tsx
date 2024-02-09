@@ -20,7 +20,6 @@ import UserServices from "../../../services/user.service";
 import UCustomSelect from "../../../components/userCustomSelect";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { divide } from "lodash";
 export function CreateTaskModal({
   open,
   onClose,
@@ -60,7 +59,6 @@ export function CreateTaskModal({
         updateTask(values);
       } else {
         createProject(values);
-        // console.log("values", values);
       }
     },
   });
@@ -349,10 +347,8 @@ export function CreateTaskModal({
                   Select Parent Task
                 </Label>
                 <UCustomSelect
-                  // defaultVal={formik?.values?.parentTaskId}
                   options={taskOption}
                   customOnChange={(e: any) => {
-                    // formik.setFieldValue("user", e?.value);
                     formik.setFieldValue("parentTaskId", e?.id);
                   }}
                   styles={""}
@@ -378,9 +374,6 @@ export function CreateTaskModal({
                     <TextField
                       {...params}
                       label={<div className="text-sm text-black">Select</div>}
-                      // InputLabelProps={{
-                      //   shrink: false,
-                      // }}
                     />
                   )}
                 />

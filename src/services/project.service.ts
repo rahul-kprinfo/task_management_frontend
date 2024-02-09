@@ -2,19 +2,19 @@ import apiInstance from "../axios";
 
 class ProjectService {
   createProject = async (data: any) => {
-    return await apiInstance.post("/create-project", data);
+    return await apiInstance.post("/project/create", data);
   };
 
   getProject = async (payload:any) => {
-    return await apiInstance.post("/get-project", payload);
+    return await apiInstance.post("/project/get", payload);
   };
 
   upateProject = async (id: any, payload:any) => {
-    return await apiInstance.patch(`/update-project/${id}`, payload);
+    return await apiInstance.patch(`/project/update/${id}`, payload);
   };
 
   deleteProject = async (id: any) => {
-    return await apiInstance.delete(`/delete-project/${id}`);
+    return await apiInstance.delete(`/project/delete/${id}`);
   };
 
  

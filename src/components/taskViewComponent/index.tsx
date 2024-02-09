@@ -6,7 +6,7 @@ export default function TaskView({ open, onClose, viewData }: any) {
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle>Task View</DialogTitle>
-          <div className=" bg-white rounded-lg shadow-md p-4">
+          <div className=" bg-white rounded-lg p-2">
             <div className=" mb-4 pb-2">
               <p>
                 <span className="font-semibold">Task Name:</span>{" "}

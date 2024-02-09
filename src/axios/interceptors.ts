@@ -5,7 +5,7 @@ export const requestInterceptor = async (config: any) => {
     let token = localStorage.getItem("ACCESS_TOKEN");
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `${token}`;
     }
     return config;
   } catch (error) {

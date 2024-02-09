@@ -15,11 +15,13 @@ function Login() {
   const token = localStorage.getItem("ACCESS_TOKEN");
   const dispatch = useDispatch();
 
+  const initialvalue = {
+    email: "",
+    password: "",
+  };
+
   const formik: any = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-    },
+    initialValues: initialvalue,
     validationSchema: Yup.object({
       email: Yup.string()
         .email("Invalid email address")
@@ -57,7 +59,7 @@ function Login() {
     if (token) {
       navigate("/home");
     }
-  });
+  }, []);
 
   return (
     <div className="bg-gray-200 flex h-[100vh]">
