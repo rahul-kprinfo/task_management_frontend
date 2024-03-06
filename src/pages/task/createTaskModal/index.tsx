@@ -32,6 +32,7 @@ export function CreateTaskModal({
   const [user, setUser] = useState([]);
   const [taskOption, setTaskOption] = useState<any>([]);
   const today = new Date().toISOString().slice(0, 10);
+  console.log("taskOption", taskOption);
 
   const formik: any = useFormik({
     initialValues: {
@@ -73,9 +74,10 @@ export function CreateTaskModal({
       projectUserId: updateData?.projectUserId || "",
       parentTaskId: updateData?.parentTaskId || 0,
       taskStatus: updateData?.taskStatus || "",
-      childTaskId: [],
+      childTaskId: updateData?.childTaskId || [],
     });
   }, [updateData, isEdit]);
+  console.log("formik?.values?.childTaskId", formik?.values);
 
   const { mutate: createProject } = useMutation<any, Error>(
     async (payload: any) => {
@@ -351,6 +353,11 @@ export function CreateTaskModal({
                   customOnChange={(e: any) => {
                     formik.setFieldValue("parentTaskId", e?.id);
                   }}
+                  defaultVal={
+                    taskOption.find(
+                      (task: any) => task.id === formik?.values?.parentTaskId
+                    )?.value
+                  }
                   styles={""}
                   placeholder="Select Parent Task"
                 />
@@ -359,9 +366,13 @@ export function CreateTaskModal({
                 <Label htmlFor="user" className="">
                   Select Child Task
                 </Label>
-                <Autocomplete
+                {/* <Autocomplete
                   disablePortal
                   size="small"
+                  value={formik?.values?.childTaskId.map((taskId: string) => {
+                    return taskOption.find((task: any) => task.id === taskId)
+                      ?.value;
+                  })}
                   multiple
                   onChange={(e: any, value: any) => {
                     const selectedIds = value?.map((item: any) => item.id);
@@ -369,6 +380,28 @@ export function CreateTaskModal({
                   }}
                   id="combo-box-demo"
                   options={taskOption}
+                  sx={{ width: "full" }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={<div className="text-sm text-black">Select</div>}
+                    />
+                  )}
+                /> */}
+                <Autocomplete
+                  disablePortal
+                  size="small"
+                  value={formik?.values?.childTaskId.map((taskId: string) => {
+                    return taskOption.find((task: any) => task.id === taskId);
+                  })}
+                  multiple
+                  onChange={(e: any, value: any) => {
+                    const selectedIds = value?.map((item: any) => item.id);
+                    formik.setFieldValue("childTaskId", selectedIds);
+                  }}
+                  id="combo-box-demo"
+                  options={taskOption}
+                  getOptionLabel={(option) => option.value} // Assuming your task object has a value property
                   sx={{ width: "full" }}
                   renderInput={(params) => (
                     <TextField

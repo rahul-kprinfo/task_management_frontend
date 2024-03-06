@@ -21,7 +21,7 @@ const UCustomSelect = ({
   customOnChange,
   defaultVal,
 }: MyComponentProps) => {
-  //   console.log("defaultVal", defaultVal);
+  console.log("defaultVal", defaultVal);
   return (
     <Select
       onValueChange={(e) => {

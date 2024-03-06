@@ -105,12 +105,19 @@ function Login() {
                 </div>
               ) : null}
             </div>
-            <button
-              type="submit"
-              className="bg-green-500 w-[100px] h-[40px] rounded-[5px] text-white hover:bg-green-600"
-            >
-              Login
-            </button>
+            <Link to="/forgot-password">
+              <div className="text-xs flex justify-end cursor-pointer text-blue-500 hover:underline">
+                Forgot Password
+              </div>
+            </Link>
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                className="bg-green-500 w-[100px] h-[40px] rounded-[5px] text-white hover:bg-green-600"
+              >
+                Login
+              </button>
+            </div>
           </form>
           <div className="text-center">
             Don't have an account?{" "}

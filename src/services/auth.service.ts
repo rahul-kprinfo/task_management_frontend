@@ -10,6 +10,12 @@ class AuthService {
     return await apiInstance.post("/signin", data);
   };
 
+  verifyEmail = async (data: any) => {
+    return await apiInstance.post("/verifyEmail", data);
+  };
+  forgotPassword = async (data: any) => {
+    return await apiInstance.patch("/forgotPassword", data);
+  };
  
 }
 

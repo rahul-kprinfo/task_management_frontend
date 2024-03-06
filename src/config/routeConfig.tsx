@@ -3,6 +3,8 @@ import Home from "../pages/home";
 import Register from "../pages/register";
 import Login from "../pages/login";
 import TaskManagement from "../pages/taskManagement";
+import ForgotEmail from "../pages/ForgotPassword/EnterEmail";
+import ConfirmPassword from "../pages/ForgotPassword/ConfirmPassword";
 // import { RouteItem } from "@/types/route.type";
 
 export const routeConfig: any = [
@@ -18,6 +20,18 @@ export const routeConfig: any = [
     displayName: "Register",
     showInNavigate: false,
     element: <Register />,
+  },
+  {
+    path: "/forgot-password",
+    displayName: "Forgot Password",
+    showInNavigate: false,
+    element: <ForgotEmail />,
+  },
+  {
+    path: "/confirm-password",
+    displayName: "Confirm Password",
+    showInNavigate: false,
+    element: <ConfirmPassword />,
   },
   {
     path: "/home",
