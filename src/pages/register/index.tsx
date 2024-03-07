@@ -109,7 +109,9 @@ function Register() {
           <div className="text-center mb-2">
             Have an account?{" "}
             <Link to="/">
-              <a href="">Login</a>
+              <a href="" className="text-blue-500 hover:underline">
+                Login
+              </a>
             </Link>
           </div>
         </div>

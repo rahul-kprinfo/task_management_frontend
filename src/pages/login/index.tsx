@@ -122,7 +122,9 @@ function Login() {
           <div className="text-center">
             Don't have an account?{" "}
             <Link to="/register">
-              <a href="">Register Now</a>
+              <a href="" className="text-blue-500 hover:underline">
+                Register Now
+              </a>
             </Link>
           </div>
         </div>
