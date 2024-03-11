@@ -5,10 +5,6 @@ import Login from "../pages/login";
 import TaskManagement from "../pages/taskManagement";
 import ForgotEmail from "../pages/ForgotPassword/EnterEmail";
 import ConfirmPassword from "../pages/ForgotPassword/ConfirmPassword";
-import DuplicatePage from "../pages/DuplicatePage";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-// import { RouteItem } from "@/types/route.type";
 
 export const routeConfig: any = [
   {
@@ -56,14 +52,14 @@ export const routeConfig: any = [
       </LayoutWrapper>
     ),
   },
-  {
-    path: "/duplicate",
-    displayName: "DP",
-    showInNavigate: false,
-    element: (
-      // <LayoutWrapper>
-      <DuplicatePage />
-      // </LayoutWrapper>
-    ),
-  },
+  // {
+  //   path: "/duplicate",
+  //   displayName: "Task",
+  //   showInNavigate: false,
+  //   element: (
+  //     // <LayoutWrapper>
+  //     <DuplicatePage />
+  //   ),
+  //   // </LayoutWrapper>
+  // },
 ];
