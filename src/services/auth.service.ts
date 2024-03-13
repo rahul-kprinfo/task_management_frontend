@@ -9,6 +9,13 @@ class AuthService {
   signIn = async (data: any) => {
     return await apiInstance.post("/signin", data);
   };
+  logout = async (userId:any) => {
+    return await apiInstance.post("/logout", userId);
+  };
+
+  getSession = async (data: any) => {
+    return await apiInstance.post("/getSession", data);
+  };
 
   verifyEmail = async (data: any) => {
     return await apiInstance.post("/verifyEmail", data);

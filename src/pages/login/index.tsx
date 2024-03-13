@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import AuthServices from "../../services/auth.service";
@@ -6,20 +6,27 @@ import { useMutation } from "react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "sonner";
-
+import io from "socket.io-client";
+const socket = io("http://localhost:3000");
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../redux/slice/authSlice";
+import { AlertDialogDemo } from "../../components/alertBox";
 
 function Login() {
   const navigate = useNavigate();
   const token = localStorage.getItem("ACCESS_TOKEN");
   const dispatch = useDispatch();
+  const [alertOpen, setAlertOpen] = useState(false);
+
+  const userId = localStorage.getItem("USER_ID");
+  const alertClose = () => {
+    setAlertOpen(false);
+  };
 
   const initialvalue = {
     email: "",
     password: "",
   };
-
   const formik: any = useFormik({
     initialValues: initialvalue,
     validationSchema: Yup.object({
@@ -33,8 +40,39 @@ function Login() {
     },
   });
 
+  const alertConfirm = () => {
+    socket.emit("confirmLogin", formik.values.email);
+    setAlertOpen(false);
+    // formik.handleSubmit();
+  };
+  useEffect(() => {
+    socket.on("multipleLogin", ({ message }) => {
+      console.log("multiple login detected");
+      setAlertOpen(true);
+    });
+
+    return () => {
+      // Clean up event listener when component unmounts
+      socket.off("multipleLogin");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("proceedWithLogin", () => {
+      // console.log("proceed with login");
+      // setAlertOpen(true);
+      formik.handleSubmit();
+    });
+
+    return () => {
+      // Clean up event listener when component unmounts
+      socket.off("proceedWithLogin");
+    };
+  }, []);
+
   const { mutate: Login } = useMutation<any, Error>(
     async (payload: any) => {
+      socket.emit("login", payload?.email);
       return await AuthServices.signIn(payload);
     },
     {
@@ -43,6 +81,8 @@ function Login() {
         localStorage.setItem("ACCESS_TOKEN", res?.token);
         localStorage.setItem("USER_NAME", res?.username);
         localStorage.setItem("EMAIL", res?.email);
+        localStorage.setItem("USER_ID", res?.id);
+        localStorage.setItem("SessionId", res.sessionId);
         dispatch(
           loginUser({ user: { username: res?.username, email: res?.email } })
         );
@@ -137,6 +177,13 @@ function Login() {
           alt=""
         />
       </div>
+      <AlertDialogDemo
+        open={alertOpen}
+        onClose={alertClose}
+        onConfirm={alertConfirm}
+        title="Multiple Logins Detected"
+        desc="You are currently logged in on another device. If you proceed with login here, you will be logged out from the other session."
+      />
     </div>
   );
 }

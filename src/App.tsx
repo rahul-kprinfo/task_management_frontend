@@ -29,13 +29,52 @@ import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import { routeConfig } from "./config/routeConfig";
 import DuplicatePage from "./pages/DuplicatePage";
+import io from "socket.io-client";
+// const socket = io("http://localhost:3000");
 
 function App() {
   const SESSION_TAB_KEY = "uniqueTabIdentifier";
   const SESSION_IS_DUPLICATE = "isDuplicate";
   const SESSION_TAB_COUNT = "tabCount"; // Add tab count key
   const [isDuplicate, setIsDuplicate] = useState<any>(false);
+  const token = localStorage.getItem("ACCESS_TOKEN");
+
   const navigate = useNavigate();
+
+  const socket = io("http://localhost:3000", {
+    auth: {
+      token: token, // Include the authentication token here
+    },
+  });
+
+  // socket.on("userLoggedIn", ({ userId }) => {
+  //   // Show notification to inform user that they have been logged out
+  //   alert(
+  //     `User with ID ${userId} has logged in from another browser. You have been logged out.`
+  //   );
+  // });
+
+  // Event listener for successful connection
+  socket.on("connect", () => {
+    console.log("Connected to the server");
+  });
+
+  // Event listener for handling errors
+  socket.on("connect_error", (error) => {
+    console.error("Connection error:", error);
+  });
+
+  // useEffect(() => {
+  //   const handleConnect = () => {
+  //     console.log("connected"); // true
+  //   };
+
+  //   socket.on("connect", handleConnect);
+
+  //   return () => {
+  //     socket.off("connect", handleConnect);
+  //   };
+  // }, [socket]);
 
   useEffect(() => {
     // Increase tab count when component mounts
@@ -86,21 +125,18 @@ function App() {
     if (isdup) {
       // sessionStorage.removeItem(SESSION_TAB_KEY);
       navigate("/duplicate");
+      // sessionStorage.removeItem(SESSION_IS_DUPLICATE);
     }
   }, [isdup]);
 
   let tabCount: any = localStorage.getItem(SESSION_TAB_COUNT);
-  if (parseInt(tabCount) == 1) {
-    // sessionStorage.removeItem(SESSION_TAB_KEY);
-    navigate("/");
-  }
-
-  // window.addEventListener("unload", () => {
-  //   if (parseInt(tabCount) === 1) {
-  //     sessionStorage.removeItem(SESSION_TAB_KEY);
-  //     navigate("/");
-  //   }
-  // });
+  useEffect(() => {
+    if (parseInt(tabCount) === 1) {
+      // sessionStorage.removeItem(SESSION_TAB_KEY);
+      // sessionStorage.removeItem(SESSION_IS_DUPLICATE);
+      navigate("/");
+    }
+  }, [tabCount]);
 
   return (
     <div>
@@ -113,7 +149,10 @@ function App() {
           <Route path="/duplicate" element={<DuplicatePage />} />
         ) : null}
 
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route
+          path="*"
+          element={token ? <Navigate to="/home" /> : <Navigate to="/" />}
+        />
       </Routes>
     </div>
   );

@@ -8,19 +8,40 @@ import { useNavigate } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { TbLogout2 } from "react-icons/tb";
 import { AlertDialogDemo } from "../components/alertBox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { FaUser } from "react-icons/fa";
+import AuthServices from "../services/auth.service";
+import { useMutation } from "react-query";
 
 export default function LogoutCard() {
   const [alertOpen, setAlertOpen] = useState(false);
+  const [activeSessionId, setActiveSession] = useState<any>("");
   const user = useSelector((state: any) => state.auth.user);
-
   const navigate = useNavigate();
+
+  const userId = localStorage.getItem("USER_ID");
+
+  const { mutate: Logout } = useMutation<any, Error>(
+    async (payload: any) => {
+      return await AuthServices.logout({ userId: userId });
+    },
+    {
+      onSuccess: (res: any) => {
+        handleLogout();
+      },
+      onError: (err: any) => {
+        // toast.error(err?.response?.data?.message);
+      },
+    }
+  );
+
   const handleLogout = () => {
     localStorage.removeItem("ACCESS_TOKEN");
     localStorage.removeItem("USER_NAME");
     localStorage.removeItem("EMAIL");
+    localStorage.removeItem("SessionId");
+    // localStorage.removeItem("USER_ID");
     navigate("/");
   };
   const alertClose = () => {
@@ -28,12 +49,38 @@ export default function LogoutCard() {
   };
 
   const alertConfirm = () => {
-    handleLogout();
+    Logout();
     setAlertOpen(false);
   };
 
   const name = localStorage.getItem("USER_NAME");
   const email = localStorage.getItem("EMAIL");
+  const sessionId = localStorage.getItem("SessionId");
+
+  const { mutate: getSession } = useMutation<any, Error>(
+    async (payload: any) => {
+      return await AuthServices.getSession({ userId: userId });
+    },
+    {
+      onSuccess: (res: any) => {
+        console.log("sessionidss", res.sessionId);
+        activeSessionId(res.sessionId);
+        // handleLogout();
+      },
+      onError: (err: any) => {
+        // toast.error(err?.response?.data?.message);
+      },
+    }
+  );
+
+  // useEffect(() => {
+  //   getSession();
+  //   if (activeSessionId != sessionId) {
+  //     handleLogout();
+  //     navigate("/");
+  //   }
+  //   console.log("sessionId", sessionId);
+  // }, [sessionId]);
 
   return (
     <div>
