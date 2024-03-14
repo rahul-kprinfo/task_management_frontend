@@ -47,14 +47,6 @@ function App() {
     },
   });
 
-  // socket.on("userLoggedIn", ({ userId }) => {
-  //   // Show notification to inform user that they have been logged out
-  //   alert(
-  //     `User with ID ${userId} has logged in from another browser. You have been logged out.`
-  //   );
-  // });
-
-  // Event listener for successful connection
   socket.on("connect", () => {
     console.log("Connected to the server");
   });
@@ -63,18 +55,6 @@ function App() {
   socket.on("connect_error", (error) => {
     console.error("Connection error:", error);
   });
-
-  // useEffect(() => {
-  //   const handleConnect = () => {
-  //     console.log("connected"); // true
-  //   };
-
-  //   socket.on("connect", handleConnect);
-
-  //   return () => {
-  //     socket.off("connect", handleConnect);
-  //   };
-  // }, [socket]);
 
   useEffect(() => {
     // Increase tab count when component mounts
@@ -122,7 +102,7 @@ function App() {
   const isdup = sessionStorage.getItem(SESSION_IS_DUPLICATE);
 
   useEffect(() => {
-    if (isdup) {
+    if (isdup && isDuplicate) {
       // sessionStorage.removeItem(SESSION_TAB_KEY);
       navigate("/duplicate");
       // sessionStorage.removeItem(SESSION_IS_DUPLICATE);
@@ -134,9 +114,10 @@ function App() {
     if (parseInt(tabCount) === 1) {
       // sessionStorage.removeItem(SESSION_TAB_KEY);
       // sessionStorage.removeItem(SESSION_IS_DUPLICATE);
-      navigate("/");
+      sessionStorage.setItem(SESSION_IS_DUPLICATE, "false");
+      // navigate("/");
     }
-  }, [tabCount]);
+  }, []);
 
   return (
     <div>
@@ -145,7 +126,7 @@ function App() {
         {routeConfig.map(({ path, element }: any) => (
           <Route key={path} path={path} element={element} />
         ))}
-        {isDuplicate || isdup ? (
+        {isDuplicate && isdup ? (
           <Route path="/duplicate" element={<DuplicatePage />} />
         ) : null}
 

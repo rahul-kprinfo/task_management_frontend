@@ -11,6 +11,7 @@ const socket = io("http://localhost:3000");
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../redux/slice/authSlice";
 import { AlertDialogDemo } from "../../components/alertBox";
+import { AlertBox } from "../../components/multipleLoginAlert";
 
 function Login() {
   const navigate = useNavigate();
@@ -59,9 +60,8 @@ function Login() {
 
   useEffect(() => {
     socket.on("proceedWithLogin", () => {
-      // console.log("proceed with login");
-      // setAlertOpen(true);
       formik.handleSubmit();
+      console.log("proceed login");
     });
 
     return () => {
@@ -82,7 +82,6 @@ function Login() {
         localStorage.setItem("USER_NAME", res?.username);
         localStorage.setItem("EMAIL", res?.email);
         localStorage.setItem("USER_ID", res?.id);
-        localStorage.setItem("SessionId", res.sessionId);
         dispatch(
           loginUser({ user: { username: res?.username, email: res?.email } })
         );
@@ -177,7 +176,7 @@ function Login() {
           alt=""
         />
       </div>
-      <AlertDialogDemo
+      <AlertBox
         open={alertOpen}
         onClose={alertClose}
         onConfirm={alertConfirm}
