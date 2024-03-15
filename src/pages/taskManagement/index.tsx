@@ -45,7 +45,7 @@ export default function TaskManagement() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="task">
-            <TaskCreation projectId={projectId} />
+            <TaskCreation projectId={projectId} projectName={projectName} />
           </TabsContent>
           <TabsContent value="user">
             <UserCreation projectId={projectId} />

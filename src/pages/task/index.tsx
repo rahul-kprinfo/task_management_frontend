@@ -10,8 +10,9 @@ import { toast } from "sonner";
 import { AlertDialogDemo } from "../../components/alertBox";
 import TaskView from "../../components/taskViewComponent";
 import Loader from "../../components/spinner";
+import { useNavigate } from "react-router-dom";
 
-function TaskCreation({ projectId }: any) {
+function TaskCreation({ projectId, projectName }: any) {
   const [data, setData] = useState<any>([]);
   const [skip, setSkip] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -24,6 +25,7 @@ function TaskCreation({ projectId }: any) {
   const [openView, setOpenView] = useState(false);
   const [viewData, setViewData] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const desc =
     "This action cannot be undone. This will permanently delete your data.";
 
@@ -104,6 +106,25 @@ function TaskCreation({ projectId }: any) {
     {
       accessorKey: "taskName",
       header: () => <div className=" font-bold">Task Name</div>,
+      cell: ({ row }) => {
+        return (
+          <div
+            className="cursor-pointer hover:underline hover:text-blue-500"
+            onClick={() => {
+              navigate("/editTask", {
+                state: {
+                  taskId: row.original.id,
+                  taskName: row.original.taskName,
+                  projectName: projectName,
+                  data: row.original,
+                },
+              });
+            }}
+          >
+            {row.getValue("taskName")}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "user",

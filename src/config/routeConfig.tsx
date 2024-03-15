@@ -5,6 +5,7 @@ import Login from "../pages/login";
 import TaskManagement from "../pages/taskManagement";
 import ForgotEmail from "../pages/ForgotPassword/EnterEmail";
 import ConfirmPassword from "../pages/ForgotPassword/ConfirmPassword";
+import EditTask from "../pages/EditTask";
 
 export const routeConfig: any = [
   {
@@ -52,14 +53,14 @@ export const routeConfig: any = [
       </LayoutWrapper>
     ),
   },
-  // {
-  //   path: "/duplicate",
-  //   displayName: "Task",
-  //   showInNavigate: false,
-  //   element: (
-  //     // <LayoutWrapper>
-  //     <DuplicatePage />
-  //   ),
-  //   // </LayoutWrapper>
-  // },
+  {
+    path: "/editTask",
+    displayName: "Edit Task",
+    showInNavigate: false,
+    element: (
+      <LayoutWrapper>
+        <EditTask />
+      </LayoutWrapper>
+    ),
+  },
 ];
