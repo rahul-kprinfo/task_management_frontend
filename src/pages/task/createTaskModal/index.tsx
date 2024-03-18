@@ -366,28 +366,6 @@ export function CreateTaskModal({
                 <Label htmlFor="user" className="">
                   Select Child Task
                 </Label>
-                {/* <Autocomplete
-                  disablePortal
-                  size="small"
-                  value={formik?.values?.childTaskId.map((taskId: string) => {
-                    return taskOption.find((task: any) => task.id === taskId)
-                      ?.value;
-                  })}
-                  multiple
-                  onChange={(e: any, value: any) => {
-                    const selectedIds = value?.map((item: any) => item.id);
-                    formik.setFieldValue("childTaskId", selectedIds);
-                  }}
-                  id="combo-box-demo"
-                  options={taskOption}
-                  sx={{ width: "full" }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label={<div className="text-sm text-black">Select</div>}
-                    />
-                  )}
-                /> */}
                 <Autocomplete
                   disablePortal
                   size="small"

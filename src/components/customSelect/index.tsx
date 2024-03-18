@@ -9,7 +9,7 @@ import {
 interface MyComponentProps {
   placeholder: string;
   options: any; // Optional prop
-  styles: string;
+  styles?: string;
   customOnChange: any;
   defaultVal?: any;
 }

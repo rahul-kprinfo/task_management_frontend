@@ -9,6 +9,14 @@ class CommentService {
     return await apiInstance.get(`/comment/get/${taskId}`,);
   };
 
+  deleteComment = async (id:any) => {
+    return await apiInstance.delete(`/comment/delete/${id}`,);
+  };
+
+  updateComment = async (id:any, payload:any) => {
+    return await apiInstance.patch(`/comment/update/${id}`,payload);
+  };
+
   
  
 }

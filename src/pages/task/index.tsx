@@ -116,6 +116,7 @@ function TaskCreation({ projectId, projectName }: any) {
                   taskId: row.original.id,
                   taskName: row.original.taskName,
                   projectName: projectName,
+                  projectId: projectId,
                   data: row.original,
                 },
               });
