@@ -1,35 +1,29 @@
-"use client";
+import React, { useState } from "react";
+import RichTextEditor, { EditorValue } from "react-rte";
 
-import * as React from "react";
+export default function BodyTextEditor({ value, setValue }: any) {
+  const [editorValue, setEditorValue] = React.useState(
+    RichTextEditor.createValueFromString(value, "markdown")
+  );
 
-import { Button } from "../../../components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../../../components/ui/dropdown-menu";
+  const handleChange = (value: any) => {
+    setEditorValue(value);
+    setValue(value.toString("markdown"));
+  };
 
-export function DropdownMenuRadioGroupDemo({ open }: any) {
-  const [position, setPosition] = React.useState("bottom");
+  console.log("editorValue");
 
   return (
-    <DropdownMenu open={open}>
-      {/* <DropdownMenuTrigger asChild>
-        <Button variant="outline">Open</Button>
-      </DropdownMenuTrigger> */}
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-          <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="bottom">Bottom</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <RichTextEditor
+      value={editorValue}
+      onChange={handleChange}
+      // required
+      // id="body-text"
+      // name="bodyText"
+      // type="string"
+      // multiline
+      // variant="filled"
+      // style={{ minHeight: 410 }}
+    />
   );
 }

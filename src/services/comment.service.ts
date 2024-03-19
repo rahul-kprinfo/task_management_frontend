@@ -9,8 +9,8 @@ class CommentService {
     return await apiInstance.get(`/comment/get/${taskId}`,);
   };
 
-  deleteComment = async (id:any) => {
-    return await apiInstance.delete(`/comment/delete/${id}`,);
+  deleteComment = async (id:any, userName:any) => {
+    return await apiInstance.delete(`/comment/delete/${id}/${userName}`,);
   };
 
   updateComment = async (id:any, payload:any) => {

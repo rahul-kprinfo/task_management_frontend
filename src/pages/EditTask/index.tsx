@@ -14,6 +14,8 @@ import TaskServices from "../../services/task.service";
 import { Autocomplete, TextField } from "@mui/material";
 import { toast } from "sonner";
 import { colorMap } from "./constant";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 export default function EditTask() {
   const state = useLocation();
@@ -31,6 +33,8 @@ export default function EditTask() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const user: any = localStorage.getItem("USER_NAME");
   const [openDropdownId, setOpenDropdownId] = useState<any>(null);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [value, setValue] = useState("");
 
   const toggleDropdown = (id: any) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
@@ -123,9 +127,9 @@ export default function EditTask() {
     },
     {
       onSuccess: (res: any) => {
-        toast.success(res?.message);
-        window.history.back();
-        formik.resetForm();
+        // toast.success(res?.message);
+        // window.history.back();
+        // formik.resetForm();
       },
       onError: (err: any) => {
         toast.error(err?.response?.data?.message);
@@ -273,10 +277,15 @@ export default function EditTask() {
         toast.success(res?.message);
         setContent("");
         getComments.refetch();
+        setIsUpdate(false);
 
         // console.log("created", res);
       },
       onError: (err: any) => {
+        toast.error(err?.response?.data?.message);
+        setIsUpdate(false);
+        setContent("");
+
         console.log(err);
       },
     }
@@ -284,7 +293,7 @@ export default function EditTask() {
 
   const { mutate: deleteComment } = useMutation<any, Error>(
     async (id: any) => {
-      return await CommentServices.deleteComment(id);
+      return await CommentServices.deleteComment(id, user);
     },
     {
       onSuccess: (res: any) => {
@@ -295,7 +304,7 @@ export default function EditTask() {
         // console.log("created", res);
       },
       onError: (err: any) => {
-        console.log(err);
+        toast.error(err?.response?.data?.message);
       },
     }
   );
@@ -313,6 +322,14 @@ export default function EditTask() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const initialValue: any = [
+    {
+      type: "paragraph",
+      children: [{ text: "A line of text in a paragraph." }],
+    },
+  ];
+
   return (
     <div className="p-4 w-[100%]">
       <div className="mb-4">
@@ -368,6 +385,7 @@ export default function EditTask() {
                   customOnChange={(e: any) => {
                     formik.setFieldValue("user", e?.value);
                     formik.setFieldValue("projectUserId", e?.id);
+                    formik.handleSubmit();
                   }}
                   styles={""}
                   placeholder="Select User"
@@ -383,6 +401,7 @@ export default function EditTask() {
                   options={taskStatusOption}
                   customOnChange={(e: any) => {
                     formik.setFieldValue("taskStatus", e);
+                    formik.handleSubmit();
                   }}
                   styles={""}
                   placeholder="Select Status"
@@ -407,14 +426,11 @@ export default function EditTask() {
                   <span className="text-xl font-bold">{user?.charAt(0)}</span>
                 </div>
                 <div className="flex-grow p-2">
-                  <textarea
-                    onChange={(e) => {
-                      setContent(e.target.value);
-                    }}
+                  <ReactQuill
+                    theme="snow"
                     value={content}
-                    className="w-full min-h-24 border rounded-md shadow-md resize-none focus:outline-none focus:border-gray-400 focus:ring-sky-500"
-                    placeholder="Write your comment here..."
-                  ></textarea>
+                    onChange={(e) => setContent(e)}
+                  />
                 </div>
               </div>
 
@@ -422,11 +438,15 @@ export default function EditTask() {
                 {content && (
                   <Button
                     onClick={() => {
-                      createComment();
+                      {
+                        isUpdate
+                          ? updateComment(openDropdownId)
+                          : createComment();
+                      }
                     }}
                     variant="outline"
                   >
-                    Save
+                    {isUpdate ? "Update" : "Save"}
                   </Button>
                 )}
               </div>
@@ -521,8 +541,10 @@ export default function EditTask() {
                               {openDropdownId === comment.id && (
                                 <div className="absolute z-10 right-0 mt-2 w-32 bg-white rounded-md shadow-lg">
                                   <button
-                                    onClick={() => {
-                                      console.log("edit Click");
+                                    onClick={(e) => {
+                                      setContent(comment?.content);
+                                      setIsUpdate(true);
+                                      // console.log("comment", comment);
                                     }}
                                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                   >
@@ -530,7 +552,6 @@ export default function EditTask() {
                                   </button>
                                   <button
                                     onClick={(e) => {
-                                      console.log("delete", openDropdownId);
                                       deleteComment(openDropdownId);
                                     }}
                                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -541,21 +562,18 @@ export default function EditTask() {
                               )}
                             </div>
                           </div>
-                          <p className="text-gray-700">{comment.content}</p>{" "}
+                          {/* <p className="text-gray-700">{comment.content}</p>{" "} */}
+                          <p
+                            className="text-gray-700"
+                            dangerouslySetInnerHTML={{
+                              __html: comment.content,
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
                   );
                 })}
-                <div className="float-right mt-2">
-                  <Button
-                    onClick={() => {
-                      formik.handleSubmit();
-                    }}
-                  >
-                    Submit
-                  </Button>
-                </div>
               </div>
             </div>
           </div>
@@ -573,6 +591,7 @@ export default function EditTask() {
                     options={priorityOptions}
                     customOnChange={(e: any) => {
                       formik.setFieldValue("priority", e);
+                      formik.handleSubmit();
                     }}
                     styles={""}
                     placeholder="Select Priority"
@@ -590,6 +609,7 @@ export default function EditTask() {
                         options={taskOption}
                         customOnChange={(e: any) => {
                           formik.setFieldValue("parentTaskId", e?.id);
+                          formik.handleSubmit();
                         }}
                         defaultVal={
                           taskOption.find(
@@ -620,6 +640,7 @@ export default function EditTask() {
                       onChange={(e: any, value: any) => {
                         const selectedIds = value?.map((item: any) => item.id);
                         formik.setFieldValue("childTaskId", selectedIds);
+                        formik.handleSubmit();
                       }}
                       id="combo-box-demo"
                       options={taskOption}
